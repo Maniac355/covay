@@ -87,6 +87,8 @@ class NewGameDialog(QDialog):
         buttons = QDialogButtonBox(
             QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel
         )
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Đồng ý")
+        buttons.button(QDialogButtonBox.StandardButton.Cancel).setText("Hủy")
         buttons.accepted.connect(self.accept)
         buttons.rejected.connect(self.reject)
         layout.addWidget(buttons)
@@ -140,6 +142,7 @@ class SettingsDialog(QDialog):
         layout.addLayout(form)
 
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Đóng")
         buttons.accepted.connect(self.accept)
         layout.addWidget(buttons)
 
@@ -200,6 +203,7 @@ class ScoreDialog(QDialog):
         layout.addSpacing(10)
 
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
+        buttons.button(QDialogButtonBox.StandardButton.Ok).setText("Đóng")
         buttons.accepted.connect(self.accept)
         layout.addWidget(buttons)
 
@@ -242,4 +246,3 @@ def confirm_action(parent: QWidget, title: str, message: str) -> bool:
 def show_invalid_move(parent: QWidget, reason: str) -> None:
     """Show a brief warning about an illegal move."""
     QMessageBox.warning(parent, "Nước đi không hợp lệ", reason)
-
