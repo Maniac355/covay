@@ -35,7 +35,7 @@ from .dialogs import (
     show_invalid_move,
 )
 from . import theme
-from .locale import vi_player
+from .locale import vi_player, vi_ruleset
 
 
 class GameScreen(QWidget):
@@ -237,9 +237,8 @@ class GameScreen(QWidget):
         self._lbl_captures_b.setText(f"Đen bắt: {g.captures[Stone.BLACK]}")
         self._lbl_captures_w.setText(f"Trắng bắt: {g.captures[Stone.WHITE]}")
         self._lbl_komi.setText(f"Komi: {g.config.komi}")
-        self._lbl_ruleset.setText(
-            f"Luật: {'Nhật Bản' if g.config.ruleset == Ruleset.JAPANESE else 'Trung Quốc'}"
-        )
+        ruleset_name = "Japanese" if g.config.ruleset == Ruleset.JAPANESE else "Chinese"
+        self._lbl_ruleset.setText(f"Luật: {vi_ruleset(ruleset_name)}")
         self._lbl_move_num.setText(f"Nước đi: {g.move_number}")
 
         # Move history
@@ -377,4 +376,3 @@ class GameScreen(QWidget):
         grad.setColorAt(1.0, QColor(235, 239, 247))
         p.fillRect(self.rect(), grad)
         p.end()
-
