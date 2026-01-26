@@ -1,0 +1,1 @@
+"""Go game UI package."""
