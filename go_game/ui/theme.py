@@ -63,6 +63,20 @@ PANEL_TEXT = QColor(230, 230, 230)
 PANEL_ACCENT = QColor(100, 180, 255)
 
 # ---------------------------------------------------------------------------
+# Menu / setup colours
+# ---------------------------------------------------------------------------
+
+MENU_BG_DARK = QColor(28, 28, 35)
+MENU_BG_MID = QColor(38, 38, 48)
+MENU_ACCENT = QColor(200, 165, 80)        # gold
+MENU_ACCENT_HOVER = QColor(230, 195, 100)
+MENU_TEXT = QColor(230, 230, 230)
+MENU_TEXT_DIM = QColor(150, 150, 160)
+MENU_CARD_BG = QColor(48, 48, 58)
+MENU_CARD_BORDER = QColor(70, 70, 85)
+MENU_CARD_SELECTED = QColor(200, 165, 80)
+
+# ---------------------------------------------------------------------------
 # Fonts
 # ---------------------------------------------------------------------------
 
@@ -80,6 +94,12 @@ def font_bold(size: int = 12) -> QFont:
 
 def font_mono(size: int = 11) -> QFont:
     f = QFont("Consolas", size)
+    return f
+
+
+def font_title(size: int = 36) -> QFont:
+    f = QFont("Georgia", size)
+    f.setBold(True)
     return f
 
 
@@ -102,15 +122,16 @@ def board_gradient(width: float, height: float) -> QLinearGradient:
 
 APP_STYLESHEET = """
 QMainWindow {
-    background-color: #2d2d32;
+    background-color: #1c1c23;
 }
 QWidget#central {
-    background-color: #2d2d32;
+    background-color: #1c1c23;
 }
 QLabel {
     color: #e6e6e6;
     font-family: "Segoe UI";
     font-size: 12px;
+    background: transparent;
 }
 QPushButton {
     background-color: #3a3a42;
@@ -172,6 +193,12 @@ QComboBox, QSpinBox, QDoubleSpinBox {
 QComboBox:hover, QSpinBox:hover, QDoubleSpinBox:hover {
     border-color: #77a;
 }
+QComboBox QAbstractItemView {
+    background-color: #3a3a42;
+    color: #e6e6e6;
+    selection-background-color: #4a5a7a;
+    border: 1px solid #555;
+}
 QCheckBox {
     color: #e6e6e6;
     font-family: "Segoe UI";
@@ -182,8 +209,131 @@ QDialog {
     background-color: #2d2d32;
 }
 QStatusBar {
-    background-color: #25252a;
+    background-color: #18181e;
     color: #aaa;
     font-size: 11px;
+}
+QScrollArea {
+    border: none;
+    background: transparent;
+}
+QScrollBar:vertical {
+    background: #2a2a32;
+    width: 10px;
+    border-radius: 5px;
+}
+QScrollBar::handle:vertical {
+    background: #555;
+    border-radius: 5px;
+    min-height: 30px;
+}
+QScrollBar::handle:vertical:hover {
+    background: #777;
+}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0px;
+}
+"""
+
+# ---------------------------------------------------------------------------
+# Menu-specific button styles
+# ---------------------------------------------------------------------------
+
+MENU_BUTTON_STYLE = """
+QPushButton {{
+    background-color: {bg};
+    color: {fg};
+    border: 2px solid {border};
+    border-radius: 8px;
+    padding: 14px 32px;
+    font-family: "Segoe UI";
+    font-size: {font_size}px;
+    font-weight: bold;
+    min-width: 220px;
+}}
+QPushButton:hover {{
+    background-color: {hover_bg};
+    border-color: {hover_border};
+}}
+QPushButton:pressed {{
+    background-color: {pressed_bg};
+}}
+"""
+
+
+def menu_button_gold() -> str:
+    return MENU_BUTTON_STYLE.format(
+        bg="#c8a550", fg="#1c1c23", border="#c8a550",
+        font_size=15,
+        hover_bg="#dab860", hover_border="#e6cc80",
+        pressed_bg="#b09040",
+    )
+
+
+def menu_button_outline() -> str:
+    return MENU_BUTTON_STYLE.format(
+        bg="transparent", fg="#e6e6e6", border="#666",
+        font_size=14,
+        hover_bg="#35354040", hover_border="#c8a550",
+        pressed_bg="#45455050",
+    )
+
+
+def menu_button_danger() -> str:
+    return MENU_BUTTON_STYLE.format(
+        bg="transparent", fg="#cc6666", border="#663333",
+        font_size=14,
+        hover_bg="#33222240", hover_border="#cc6666",
+        pressed_bg="#44333350",
+    )
+
+
+CARD_STYLE_NORMAL = """
+    background-color: #303038;
+    border: 2px solid #50505a;
+    border-radius: 10px;
+"""
+
+CARD_STYLE_SELECTED = """
+    background-color: #3a3530;
+    border: 2px solid #c8a550;
+    border-radius: 10px;
+"""
+
+SETUP_START_BUTTON = """
+QPushButton {
+    background-color: #c8a550;
+    color: #1c1c23;
+    border: none;
+    border-radius: 8px;
+    padding: 14px 48px;
+    font-family: "Segoe UI";
+    font-size: 16px;
+    font-weight: bold;
+    min-width: 200px;
+}
+QPushButton:hover {
+    background-color: #dab860;
+}
+QPushButton:pressed {
+    background-color: #b09040;
+}
+"""
+
+SETUP_BACK_BUTTON = """
+QPushButton {
+    background-color: transparent;
+    color: #aaa;
+    border: 1px solid #555;
+    border-radius: 6px;
+    padding: 8px 24px;
+    font-family: "Segoe UI";
+    font-size: 13px;
+    min-width: 100px;
+}
+QPushButton:hover {
+    color: #e6e6e6;
+    border-color: #888;
+    background-color: #ffffff10;
 }
 """
