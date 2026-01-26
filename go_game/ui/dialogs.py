@@ -36,7 +36,7 @@ class NewGameDialog(QDialog):
 
     def __init__(self, current_config: Optional[GameConfig] = None, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle("New Game")
+        self.setWindowTitle("Ván mới")
         self.setMinimumWidth(340)
         self._config = current_config or GameConfig()
         self._build_ui()
@@ -45,24 +45,24 @@ class NewGameDialog(QDialog):
         layout = QVBoxLayout(self)
 
         # Board size
-        group_board = QGroupBox("Board")
+        group_board = QGroupBox("Bàn cờ")
         form_board = QFormLayout(group_board)
         self._size_combo = QComboBox()
         self._size_combo.addItems(["9 × 9", "13 × 13", "19 × 19"])
         size_map = {9: 0, 13: 1, 19: 2}
         self._size_combo.setCurrentIndex(size_map.get(self._config.board_size, 2))
         self._size_combo.currentIndexChanged.connect(self._on_size_changed)
-        form_board.addRow("Board Size:", self._size_combo)
+        form_board.addRow("Kích thước:", self._size_combo)
         layout.addWidget(group_board)
 
         # Rules
-        group_rules = QGroupBox("Rules")
+        group_rules = QGroupBox("Luật")
         form_rules = QFormLayout(group_rules)
 
         self._ruleset_combo = QComboBox()
-        self._ruleset_combo.addItems(["Japanese (Territory)", "Chinese (Area)"])
+        self._ruleset_combo.addItems(["Nhật Bản (Tính đất)", "Trung Quốc (Tính diện tích)"])
         self._ruleset_combo.setCurrentIndex(0 if self._config.ruleset == Ruleset.JAPANESE else 1)
-        form_rules.addRow("Ruleset:", self._ruleset_combo)
+        form_rules.addRow("Luật chơi:", self._ruleset_combo)
 
         self._komi_spin = QDoubleSpinBox()
         self._komi_spin.setRange(0.0, 99.5)
@@ -72,11 +72,11 @@ class NewGameDialog(QDialog):
         form_rules.addRow("Komi:", self._komi_spin)
 
         self._ko_combo = QComboBox()
-        self._ko_combo.addItems(["Simple Ko", "Positional Superko"])
+        self._ko_combo.addItems(["Ko đơn giản", "Siêu Ko theo vị trí"])
         self._ko_combo.setCurrentIndex(0 if self._config.ko_rule == KoRule.SIMPLE else 1)
-        form_rules.addRow("Ko Rule:", self._ko_combo)
+        form_rules.addRow("Luật Ko:", self._ko_combo)
 
-        self._suicide_check = QCheckBox("Allow suicide moves")
+        self._suicide_check = QCheckBox("Cho phép nước đi tự sát")
         self._suicide_check.setChecked(self._config.allow_suicide)
         form_rules.addRow(self._suicide_check)
 
@@ -118,7 +118,7 @@ class SettingsDialog(QDialog):
 
     def __init__(self, config: GameConfig, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Game Settings")
+        self.setWindowTitle("Cài đặt ván")
         self.setMinimumWidth(300)
         self._config = config
         self._build_ui()
@@ -127,15 +127,15 @@ class SettingsDialog(QDialog):
         layout = QVBoxLayout(self)
 
         form = QFormLayout()
-        form.addRow("Board Size:", QLabel(f"{self._config.board_size} × {self._config.board_size}"))
-        form.addRow("Ruleset:", QLabel(
-            "Japanese (Territory)" if self._config.ruleset == Ruleset.JAPANESE else "Chinese (Area)"
+        form.addRow("Kích thước:", QLabel(f"{self._config.board_size} × {self._config.board_size}"))
+        form.addRow("Luật chơi:", QLabel(
+            "Nhật Bản (Tính đất)" if self._config.ruleset == Ruleset.JAPANESE else "Trung Quốc (Tính diện tích)"
         ))
         form.addRow("Komi:", QLabel(str(self._config.komi)))
-        form.addRow("Ko Rule:", QLabel(
-            "Simple Ko" if self._config.ko_rule == KoRule.SIMPLE else "Positional Superko"
+        form.addRow("Luật Ko:", QLabel(
+            "Ko đơn giản" if self._config.ko_rule == KoRule.SIMPLE else "Siêu Ko theo vị trí"
         ))
-        form.addRow("Allow Suicide:", QLabel("Yes" if self._config.allow_suicide else "No"))
+        form.addRow("Cho phép tự sát:", QLabel("Có" if self._config.allow_suicide else "Không"))
         layout.addLayout(form)
 
         buttons = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok)
@@ -152,7 +152,7 @@ class ScoreDialog(QDialog):
 
     def __init__(self, score: dict, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
-        self.setWindowTitle("Game Result")
+        self.setWindowTitle("Kết quả ván")
         self.setMinimumWidth(360)
         self._score = score
         self._build_ui()
@@ -161,17 +161,18 @@ class ScoreDialog(QDialog):
         layout = QVBoxLayout(self)
 
         ruleset = self._score.get("ruleset", "")
+        ruleset_label = _vi_ruleset(ruleset)
         reason = self._score.get("reason", "")
         winner = self._score.get("winner", "?")
         margin = self._score.get("margin", 0)
 
         # Winner banner
         if reason == "Resignation":
-            banner = f"{winner} wins by Resignation"
+            banner = f"{_vi_player(winner)} thắng do đối thủ xin thua"
         elif winner == "Tie":
-            banner = "Game is a Tie (Jigo)"
+            banner = "Ván hòa (Jigo)"
         else:
-            banner = f"{winner} wins by {margin:.1f} points"
+            banner = f"{_vi_player(winner)} thắng {margin:.1f} điểm"
 
         lbl_banner = QLabel(banner)
         lbl_banner.setFont(theme.font_bold(16))
@@ -181,7 +182,7 @@ class ScoreDialog(QDialog):
         layout.addSpacing(10)
 
         # Details
-        lbl_ruleset = QLabel(f"Ruleset: {ruleset}")
+        lbl_ruleset = QLabel(f"Luật: {ruleset_label}")
         lbl_ruleset.setFont(theme.font_normal(11))
         layout.addWidget(lbl_ruleset)
 
@@ -189,11 +190,11 @@ class ScoreDialog(QDialog):
 
         # Black breakdown
         b = self._score.get("black", {})
-        layout.addWidget(QLabel(self._format_side("Black", b)))
+        layout.addWidget(QLabel(self._format_side("Đen", b)))
 
         # White breakdown
         w = self._score.get("white", {})
-        layout.addWidget(QLabel(self._format_side("White", w)))
+        layout.addWidget(QLabel(self._format_side("Trắng", w)))
 
         layout.addSpacing(10)
 
@@ -207,9 +208,16 @@ class ScoreDialog(QDialog):
         for key, val in data.items():
             if key == "total":
                 continue
-            parts.append(f"    {key.capitalize()}: {val}")
+            label = {
+                "territory": "Đất",
+                "captures": "Bắt quân",
+                "stones": "Quân",
+                "komi": "Komi",
+                "dead": "Quân chết",
+            }.get(key, key.capitalize())
+            parts.append(f"    {label}: {val}")
         total = data.get("total", "?")
-        parts.append(f"    Total: {total}")
+        parts.append(f"    Tổng: {total}")
         return "\n".join(parts)
 
 
@@ -232,4 +240,19 @@ def confirm_action(parent: QWidget, title: str, message: str) -> bool:
 
 def show_invalid_move(parent: QWidget, reason: str) -> None:
     """Show a brief warning about an illegal move."""
-    QMessageBox.warning(parent, "Invalid Move", reason)
+    QMessageBox.warning(parent, "Nước đi không hợp lệ", reason)
+
+
+def _vi_player(name: str) -> str:
+    return {
+        "Black": "Đen",
+        "White": "Trắng",
+        "Tie": "Hòa",
+    }.get(name, name)
+
+
+def _vi_ruleset(name: str) -> str:
+    return {
+        "Japanese": "Nhật Bản",
+        "Chinese": "Trung Quốc",
+    }.get(name, name)

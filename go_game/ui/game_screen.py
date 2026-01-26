@@ -93,7 +93,7 @@ class GameScreen(QWidget):
         right.setSpacing(8)
 
         # -- Back to menu button (top) --
-        self._btn_menu = QPushButton("Main Menu")
+        self._btn_menu = QPushButton("Menu chính")
         self._btn_menu.setStyleSheet(theme.SETUP_BACK_BUTTON)
         self._btn_menu.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_menu.clicked.connect(self._on_back_to_menu)
@@ -102,19 +102,19 @@ class GameScreen(QWidget):
         right.addSpacing(4)
 
         # -- Turn / status --
-        self._lbl_turn = QLabel("Black to play")
+        self._lbl_turn = QLabel("Đen đi trước")
         self._lbl_turn.setFont(theme.font_bold(14))
         self._lbl_turn.setAlignment(Qt.AlignmentFlag.AlignCenter)
         right.addWidget(self._lbl_turn)
 
         # -- Info group --
-        info_group = QGroupBox("Game Info")
+        info_group = QGroupBox("Thông tin ván")
         info_layout = QVBoxLayout(info_group)
-        self._lbl_captures_b = QLabel("Black captures: 0")
-        self._lbl_captures_w = QLabel("White captures: 0")
+        self._lbl_captures_b = QLabel("Đen bắt: 0")
+        self._lbl_captures_w = QLabel("Trắng bắt: 0")
         self._lbl_komi = QLabel("Komi: 6.5")
-        self._lbl_ruleset = QLabel("Ruleset: Japanese")
-        self._lbl_move_num = QLabel("Move: 0")
+        self._lbl_ruleset = QLabel("Luật: Nhật Bản")
+        self._lbl_move_num = QLabel("Nước đi: 0")
         for lbl in [
             self._lbl_captures_b,
             self._lbl_captures_w,
@@ -127,7 +127,7 @@ class GameScreen(QWidget):
         right.addWidget(info_group)
 
         # -- History list --
-        history_group = QGroupBox("Move History")
+        history_group = QGroupBox("Lịch sử nước đi")
         history_layout = QVBoxLayout(history_group)
         self._move_list = QListWidget()
         self._move_list.setFont(theme.font_mono(10))
@@ -135,42 +135,42 @@ class GameScreen(QWidget):
         right.addWidget(history_group, stretch=1)
 
         # -- Toolbar buttons --
-        btn_group = QGroupBox("Actions")
+        btn_group = QGroupBox("Thao tác")
         btn_layout = QVBoxLayout(btn_group)
 
         row1 = QHBoxLayout()
-        self._btn_new = QPushButton("New Game")
-        self._btn_pass = QPushButton("Pass")
-        self._btn_resign = QPushButton("Resign")
+        self._btn_new = QPushButton("Ván mới")
+        self._btn_pass = QPushButton("Bỏ lượt")
+        self._btn_resign = QPushButton("Xin thua")
         row1.addWidget(self._btn_new)
         row1.addWidget(self._btn_pass)
         row1.addWidget(self._btn_resign)
         btn_layout.addLayout(row1)
 
         row2 = QHBoxLayout()
-        self._btn_undo = QPushButton("Undo")
-        self._btn_redo = QPushButton("Redo")
-        self._btn_settings = QPushButton("Settings")
+        self._btn_undo = QPushButton("Hoàn tác")
+        self._btn_redo = QPushButton("Làm lại")
+        self._btn_settings = QPushButton("Cài đặt")
         row2.addWidget(self._btn_undo)
         row2.addWidget(self._btn_redo)
         row2.addWidget(self._btn_settings)
         btn_layout.addLayout(row2)
 
         row3 = QHBoxLayout()
-        self._btn_save = QPushButton("Save")
-        self._btn_load = QPushButton("Load")
+        self._btn_save = QPushButton("Lưu")
+        self._btn_load = QPushButton("Tải")
         row3.addWidget(self._btn_save)
         row3.addWidget(self._btn_load)
         btn_layout.addLayout(row3)
 
         # Scoring mode buttons (hidden until scoring phase)
-        self._btn_confirm_score = QPushButton("Confirm Score")
+        self._btn_confirm_score = QPushButton("Xác nhận điểm")
         self._btn_confirm_score.setVisible(False)
         self._btn_confirm_score.setStyleSheet(
-            "QPushButton { background-color: #c8a550; color: #1c1c23; font-weight: bold; }"
-            "QPushButton:hover { background-color: #dab860; }"
+            "QPushButton { background-color: #e9d7b5; color: #503a1f; font-weight: bold; }"
+            "QPushButton:hover { background-color: #f2e3c9; }"
         )
-        self._btn_resume_play = QPushButton("Resume Play")
+        self._btn_resume_play = QPushButton("Tiếp tục chơi")
         self._btn_resume_play.setVisible(False)
         row4 = QHBoxLayout()
         row4.addWidget(self._btn_confirm_score)
@@ -204,41 +204,42 @@ class GameScreen(QWidget):
 
         # Turn label
         if g.phase == GamePhase.PLAYING:
-            color_name = "Black" if g.current_turn == Stone.BLACK else "White"
-            self._lbl_turn.setText(f"{color_name} to play")
+            color_name = "Đen" if g.current_turn == Stone.BLACK else "Trắng"
+            self._lbl_turn.setText(f"{color_name} đến lượt")
             if g.current_turn == Stone.BLACK:
                 self._lbl_turn.setStyleSheet(
-                    "color: #ddd; background-color: #333; border-radius: 6px; padding: 6px;"
+                    "color: #ffffff; background-color: #4a4f5c; border-radius: 8px; padding: 6px;"
                 )
             else:
                 self._lbl_turn.setStyleSheet(
-                    "color: #333; background-color: #e8e8e0; border-radius: 6px; padding: 6px;"
+                    "color: #3a3f49; background-color: #f0f3f9; border-radius: 8px; padding: 6px;"
                 )
         elif g.phase == GamePhase.SCORING:
-            self._lbl_turn.setText("Scoring Mode\nClick groups to mark dead stones")
+            self._lbl_turn.setText("Chế độ tính điểm\nNhấn vào nhóm để đánh dấu quân chết")
             self._lbl_turn.setStyleSheet(
-                "color: #ffaa44; background-color: #3a3020; border-radius: 6px; padding: 6px;"
+                "color: #a06b2f; background-color: #f7efe3; border-radius: 8px; padding: 6px;"
             )
         elif g.phase == GamePhase.FINISHED:
             winner = g.final_score.get("winner", "?") if g.final_score else "?"
+            winner_text = _vi_player(winner)
             reason = g.final_score.get("reason", "") if g.final_score else ""
             if reason == "Resignation":
-                self._lbl_turn.setText(f"Game Over\n{winner} wins by resignation")
+                self._lbl_turn.setText(f"Kết thúc ván\n{winner_text} thắng do đối thủ xin thua")
             else:
                 margin = g.final_score.get("margin", 0) if g.final_score else 0
-                self._lbl_turn.setText(f"Game Over\n{winner} wins by {margin:.1f}")
+                self._lbl_turn.setText(f"Kết thúc ván\n{winner_text} thắng {margin:.1f} điểm")
             self._lbl_turn.setStyleSheet(
-                "color: #66ccff; background-color: #1a2a3a; border-radius: 6px; padding: 6px;"
+                "color: #3c7db6; background-color: #e6f1fb; border-radius: 8px; padding: 6px;"
             )
 
         # Info
-        self._lbl_captures_b.setText(f"Black captures: {g.captures[Stone.BLACK]}")
-        self._lbl_captures_w.setText(f"White captures: {g.captures[Stone.WHITE]}")
+        self._lbl_captures_b.setText(f"Đen bắt: {g.captures[Stone.BLACK]}")
+        self._lbl_captures_w.setText(f"Trắng bắt: {g.captures[Stone.WHITE]}")
         self._lbl_komi.setText(f"Komi: {g.config.komi}")
         self._lbl_ruleset.setText(
-            f"Ruleset: {'Japanese' if g.config.ruleset == Ruleset.JAPANESE else 'Chinese'}"
+            f"Luật: {'Nhật Bản' if g.config.ruleset == Ruleset.JAPANESE else 'Trung Quốc'}"
         )
-        self._lbl_move_num.setText(f"Move: {g.move_number}")
+        self._lbl_move_num.setText(f"Nước đi: {g.move_number}")
 
         # Move history
         self._move_list.clear()
@@ -273,11 +274,11 @@ class GameScreen(QWidget):
         if result == MoveResult.OK:
             self._update_ui()
         elif result == MoveResult.OCCUPIED:
-            show_invalid_move(self, "That intersection is already occupied.")
+            show_invalid_move(self, "Giao điểm này đã có quân.")
         elif result == MoveResult.KO:
-            show_invalid_move(self, "Illegal move: Ko violation.\nYou must play elsewhere first.")
+            show_invalid_move(self, "Nước đi phạm luật Ko.\nBạn cần đi nơi khác trước.")
         elif result == MoveResult.SUICIDE:
-            show_invalid_move(self, "Illegal move: Suicide is not allowed.\nYour stone would have no liberties.")
+            show_invalid_move(self, "Không được tự sát.\nQuân của bạn sẽ không có khí.")
 
     def _on_dead_toggled(self, row: int, col: int) -> None:
         if self._game is None:
@@ -287,13 +288,13 @@ class GameScreen(QWidget):
 
     def _on_new_game(self) -> None:
         if self._game and self._game.phase == GamePhase.PLAYING and self._game.move_number > 0:
-            if not confirm_action(self, "New Game", "Current game will be lost. Continue?"):
+            if not confirm_action(self, "Ván mới", "Ván hiện tại sẽ bị mất. Tiếp tục?"):
                 return
         self.new_game_requested.emit()
 
     def _on_back_to_menu(self) -> None:
         if self._game and self._game.phase == GamePhase.PLAYING and self._game.move_number > 0:
-            if not confirm_action(self, "Leave Game", "Current game will be lost. Return to menu?"):
+            if not confirm_action(self, "Rời ván", "Ván hiện tại sẽ bị mất. Quay lại menu?"):
                 return
         self.back_to_menu.emit()
 
@@ -306,8 +307,8 @@ class GameScreen(QWidget):
     def _on_resign(self) -> None:
         if self._game is None:
             return
-        color_name = "Black" if self._game.current_turn == Stone.BLACK else "White"
-        if not confirm_action(self, "Resign", f"{color_name} resigns. Are you sure?"):
+        color_name = "Đen" if self._game.current_turn == Stone.BLACK else "Trắng"
+        if not confirm_action(self, "Xin thua", f"{color_name} xin thua. Bạn chắc chứ?"):
             return
         self._game.resign()
         self._update_ui()
@@ -330,17 +331,17 @@ class GameScreen(QWidget):
         if self._game is None:
             return
         path, _ = QFileDialog.getSaveFileName(
-            self, "Save Game", "", "Go Game (*.json);;All Files (*)"
+            self, "Lưu ván", "", "Ván Cờ Vây (*.json);;Tất cả tệp (*)"
         )
         if path:
             try:
                 self._game.save_json(path)
             except Exception as e:
-                show_invalid_move(self, f"Save failed: {e}")
+                show_invalid_move(self, f"Lưu thất bại: {e}")
 
     def _on_load(self) -> None:
         path, _ = QFileDialog.getOpenFileName(
-            self, "Load Game", "", "Go Game (*.json);;All Files (*)"
+            self, "Tải ván", "", "Ván Cờ Vây (*.json);;Tất cả tệp (*)"
         )
         if path:
             try:
@@ -348,7 +349,7 @@ class GameScreen(QWidget):
                 self._board_widget.set_game(self._game)
                 self._update_ui()
             except Exception as e:
-                show_invalid_move(self, f"Load failed: {e}")
+                show_invalid_move(self, f"Tải thất bại: {e}")
 
     def _on_confirm_score(self) -> None:
         if self._game is None:
@@ -371,7 +372,15 @@ class GameScreen(QWidget):
         p = QPainter(self)
         w, h = self.width(), self.height()
         grad = QLinearGradient(0, 0, 0, h)
-        grad.setColorAt(0.0, QColor(28, 28, 35))
-        grad.setColorAt(1.0, QColor(24, 24, 30))
+        grad.setColorAt(0.0, QColor(246, 248, 252))
+        grad.setColorAt(1.0, QColor(235, 239, 247))
         p.fillRect(self.rect(), grad)
         p.end()
+
+
+def _vi_player(name: str) -> str:
+    return {
+        "Black": "Đen",
+        "White": "Trắng",
+        "Tie": "Hòa",
+    }.get(name, name)

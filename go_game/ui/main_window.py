@@ -39,7 +39,7 @@ class MainWindow(QMainWindow):
 
     def __init__(self) -> None:
         super().__init__()
-        self.setWindowTitle("Go – Cờ Vây")
+        self.setWindowTitle("Cờ Vây")
         self.setMinimumSize(950, 680)
         self.resize(1120, 780)
 
@@ -49,7 +49,7 @@ class MainWindow(QMainWindow):
 
         # Status bar
         self.setStatusBar(QStatusBar())
-        self.statusBar().showMessage("Welcome to Go – Cờ Vây")
+        self.statusBar().showMessage("Chào mừng đến với Cờ Vây")
 
     # -----------------------------------------------------------------------
     # Build
@@ -97,19 +97,19 @@ class MainWindow(QMainWindow):
 
     def _go_to_menu(self) -> None:
         self._show_screen(self._MENU)
-        self.statusBar().showMessage("Main Menu")
+        self.statusBar().showMessage("Menu chính")
 
     def _go_to_setup(self) -> None:
         self._show_screen(self._SETUP)
-        self.statusBar().showMessage("Configure your game")
+        self.statusBar().showMessage("Thiết lập ván chơi")
 
     def _go_to_tutorial(self) -> None:
         self._show_screen(self._TUTORIAL)
-        self.statusBar().showMessage("How to Play Go")
+        self.statusBar().showMessage("Hướng dẫn chơi Cờ Vây")
 
     def _go_to_game(self) -> None:
         self._show_screen(self._GAME)
-        self.statusBar().showMessage("Game in progress")
+        self.statusBar().showMessage("Ván đang diễn ra")
 
     # -----------------------------------------------------------------------
     # Actions
@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
 
     def _on_load_game(self) -> None:
         path, _ = QFileDialog.getOpenFileName(
-            self, "Load Game", "", "Go Game (*.json);;All Files (*)"
+            self, "Tải ván", "", "Ván Cờ Vây (*.json);;Tất cả tệp (*)"
         )
         if not path:
             return
@@ -129,6 +129,6 @@ class MainWindow(QMainWindow):
             game = GameState.load_json(path)
             self._game_screen.load_game(game)
             self._go_to_game()
-            self.statusBar().showMessage(f"Game loaded from {path}")
+            self.statusBar().showMessage(f"Đã tải ván từ {path}")
         except Exception as e:
-            show_invalid_move(self, f"Load failed: {e}")
+            show_invalid_move(self, f"Tải thất bại: {e}")
