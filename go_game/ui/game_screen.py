@@ -35,6 +35,7 @@ from .dialogs import (
     show_invalid_move,
 )
 from . import theme
+from .locale import vi_player
 
 
 class GameScreen(QWidget):
@@ -221,7 +222,7 @@ class GameScreen(QWidget):
             )
         elif g.phase == GamePhase.FINISHED:
             winner = g.final_score.get("winner", "?") if g.final_score else "?"
-            winner_text = _vi_player(winner)
+            winner_text = vi_player(winner)
             reason = g.final_score.get("reason", "") if g.final_score else ""
             if reason == "Resignation":
                 self._lbl_turn.setText(f"Kết thúc ván\n{winner_text} thắng do đối thủ xin thua")
@@ -377,10 +378,3 @@ class GameScreen(QWidget):
         p.fillRect(self.rect(), grad)
         p.end()
 
-
-def _vi_player(name: str) -> str:
-    return {
-        "Black": "Đen",
-        "White": "Trắng",
-        "Tie": "Hòa",
-    }.get(name, name)

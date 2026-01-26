@@ -186,8 +186,8 @@ class GameSetupScreen(QWidget):
 
         size_row = QHBoxLayout()
         size_row.setSpacing(16)
-        size_row.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
+        size_row.addStretch()
         card_9 = _SelectCard("9 × 9", "Ván nhanh\n~15 phút", "9")
         card_13 = _SelectCard("13 × 13", "Ván trung bình\n~30 phút", "13")
         card_19 = _SelectCard("19 × 19", "Ván tiêu chuẩn\n~60+ phút", "19")
@@ -211,8 +211,8 @@ class GameSetupScreen(QWidget):
 
         rule_row = QHBoxLayout()
         rule_row.setSpacing(16)
-        rule_row.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
+        rule_row.addStretch()
         card_jp = _SelectCard(
             "Nhật Bản",
             "Tính đất\nCó tính bắt quân",

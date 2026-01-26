@@ -25,6 +25,7 @@ from PySide6.QtWidgets import (
 from ..engine.rules import KoRule
 from ..engine.state import DEFAULT_KOMI, GameConfig, Ruleset
 from . import theme
+from .locale import vi_player, vi_ruleset
 
 
 # ---------------------------------------------------------------------------
@@ -161,18 +162,18 @@ class ScoreDialog(QDialog):
         layout = QVBoxLayout(self)
 
         ruleset = self._score.get("ruleset", "")
-        ruleset_label = _vi_ruleset(ruleset)
+        ruleset_label = vi_ruleset(ruleset)
         reason = self._score.get("reason", "")
         winner = self._score.get("winner", "?")
         margin = self._score.get("margin", 0)
 
         # Winner banner
         if reason == "Resignation":
-            banner = f"{_vi_player(winner)} thắng do đối thủ xin thua"
+            banner = f"{vi_player(winner)} thắng do đối thủ xin thua"
         elif winner == "Tie":
             banner = "Ván hòa (Jigo)"
         else:
-            banner = f"{_vi_player(winner)} thắng {margin:.1f} điểm"
+            banner = f"{vi_player(winner)} thắng {margin:.1f} điểm"
 
         lbl_banner = QLabel(banner)
         lbl_banner.setFont(theme.font_bold(16))
@@ -242,17 +243,3 @@ def show_invalid_move(parent: QWidget, reason: str) -> None:
     """Show a brief warning about an illegal move."""
     QMessageBox.warning(parent, "Nước đi không hợp lệ", reason)
 
-
-def _vi_player(name: str) -> str:
-    return {
-        "Black": "Đen",
-        "White": "Trắng",
-        "Tie": "Hòa",
-    }.get(name, name)
-
-
-def _vi_ruleset(name: str) -> str:
-    return {
-        "Japanese": "Nhật Bản",
-        "Chinese": "Trung Quốc",
-    }.get(name, name)

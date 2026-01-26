@@ -137,7 +137,7 @@ QPushButton {
     background-color: #ffffff;
     color: #2f3440;
     border: 1px solid #d6dbe6;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 7px 16px;
     font-family: "Segoe UI";
     font-size: 12px;
@@ -159,7 +159,7 @@ QListWidget {
     background-color: #ffffff;
     color: #2f3440;
     border: 1px solid #d6dbe6;
-    border-radius: 8px;
+    border-radius: 12px;
     font-family: "Consolas";
     font-size: 11px;
 }
@@ -169,7 +169,7 @@ QListWidget::item:selected {
 QGroupBox {
     color: #2f3440;
     border: 1px solid #d6dbe6;
-    border-radius: 10px;
+    border-radius: 14px;
     margin-top: 8px;
     padding-top: 12px;
     font-family: "Segoe UI";
@@ -185,7 +185,7 @@ QComboBox, QSpinBox, QDoubleSpinBox {
     background-color: #ffffff;
     color: #2f3440;
     border: 1px solid #d6dbe6;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 4px 8px;
     font-family: "Segoe UI";
     font-size: 12px;
@@ -220,11 +220,11 @@ QScrollArea {
 QScrollBar:vertical {
     background: #edf0f6;
     width: 10px;
-    border-radius: 5px;
+    border-radius: 6px;
 }
 QScrollBar::handle:vertical {
     background: #c9d2e2;
-    border-radius: 5px;
+    border-radius: 6px;
     min-height: 30px;
 }
 QScrollBar::handle:vertical:hover {
@@ -244,7 +244,7 @@ QPushButton {{
     background-color: {bg};
     color: {fg};
     border: 2px solid {border};
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 14px 32px;
     font-family: "Segoe UI";
     font-size: {font_size}px;
@@ -291,13 +291,13 @@ def menu_button_danger() -> str:
 CARD_STYLE_NORMAL = """
     background-color: #ffffff;
     border: 2px solid #d6dbe6;
-    border-radius: 12px;
+    border-radius: 14px;
 """
 
 CARD_STYLE_SELECTED = """
     background-color: #f6efe3;
     border: 2px solid #d9c09a;
-    border-radius: 12px;
+    border-radius: 14px;
 """
 
 SETUP_START_BUTTON = """
@@ -305,7 +305,7 @@ QPushButton {
     background-color: #e9d7b5;
     color: #503a1f;
     border: none;
-    border-radius: 10px;
+    border-radius: 14px;
     padding: 14px 48px;
     font-family: "Segoe UI";
     font-size: 16px;
@@ -325,7 +325,7 @@ QPushButton {
     background-color: #ffffff;
     color: #6b7485;
     border: 1px solid #d6dbe6;
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 8px 24px;
     font-family: "Segoe UI";
     font-size: 13px;
