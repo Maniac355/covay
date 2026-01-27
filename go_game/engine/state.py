@@ -317,24 +317,42 @@ class GameState:
     @staticmethod
     def from_dict(d: dict[str, Any]) -> "GameState":
         """Reconstruct a GameState from a dict (as returned by to_dict)."""
-        config = GameConfig.from_dict(d["config"])
+        config = GameConfig.from_dict(d.get("config", {}))
         state = GameState(config)
-        # Replay moves
-        for m in d.get("moves", []):
-            color = Stone(m["color"])
-            # Ensure it's the right turn
-            if state.current_turn != color:
-                state.current_turn = color
-            if m["point"] is None:
-                state.pass_turn()
-            else:
-                row, col = m["point"]
-                result = state.play(row, col)
-                if result != MoveResult.OK:
-                    # Fallback: force-place (shouldn't happen with valid saves)
-                    state.board.set(row, col, color)
-                    state.current_turn = color.opponent()
-                    state.move_number += 1
+        moves = d.get("moves", [])
+        if moves:
+            # Replay moves
+            for m in moves:
+                color = Stone(m["color"])
+                # Ensure it's the right turn
+                if state.current_turn != color:
+                    state.current_turn = color
+                if m["point"] is None:
+                    state.pass_turn()
+                else:
+                    row, col = m["point"]
+                    result = state.play(row, col)
+                    if result != MoveResult.OK:
+                        # Fallback: force-place (shouldn't happen with valid saves)
+                        state.board.set(row, col, color)
+                        state.current_turn = color.opponent()
+                        state.move_number += 1
+        elif "grid" in d:
+            grid = d["grid"]
+            size = len(grid)
+            state.board = Board(size)
+            for r, row in enumerate(grid):
+                for c, val in enumerate(row):
+                    state.board.set(r, c, Stone(val))
+            state.position_hashes = {state.board.position_hash()}
+            state.history.clear()
+            state._push_snapshot(move=None)
+        if "captures_black" in d:
+            state.captures[Stone.BLACK] = d["captures_black"]
+        if "captures_white" in d:
+            state.captures[Stone.WHITE] = d["captures_white"]
+        if "ko_point" in d:
+            state.ko_point = tuple(d["ko_point"]) if d["ko_point"] else None
         if "current_turn" in d:
             state.current_turn = Stone(d["current_turn"])
         state.consecutive_passes = d.get("consecutive_passes", state.consecutive_passes)

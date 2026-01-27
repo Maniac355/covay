@@ -628,6 +628,23 @@ class TestSaveLoad(unittest.TestCase):
         finally:
             os.unlink(path)
 
+    def test_load_grid_without_moves(self) -> None:
+        game = GameState(GameConfig(board_size=9))
+        game.play(0, 0)
+        game.play(1, 0)
+        game.play(0, 1)
+        game.play(2, 0)
+        game.play(1, 1)
+        data = game.to_dict()
+        data["moves"] = []
+
+        loaded = GameState.from_dict(data)
+
+        self.assertEqual(loaded.board.size, 9)
+        self.assertEqual(loaded.board.get(0, 0), Stone.BLACK)
+        self.assertEqual(loaded.board.get(1, 0), Stone.WHITE)
+        self.assertEqual(loaded.captures[Stone.BLACK], game.captures[Stone.BLACK])
+
 
 if __name__ == "__main__":
     unittest.main()
