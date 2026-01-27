@@ -586,6 +586,45 @@ class TestSaveLoad(unittest.TestCase):
             self.assertEqual(loaded.board.get(3, 3), Stone.WHITE)
             self.assertEqual(loaded.board.get(5, 5), Stone.BLACK)
             self.assertEqual(loaded.config.komi, 3.5)
+            self.assertEqual(loaded.move_number, game.move_number)
+            self.assertEqual(loaded.consecutive_passes, game.consecutive_passes)
+        finally:
+            os.unlink(path)
+
+    def test_save_load_scoring_state(self) -> None:
+        game = GameState(GameConfig(board_size=9))
+        game.play(0, 0)
+        game.play(1, 0)
+        game.pass_turn()
+        game.pass_turn()
+        game.dead_stones.add((1, 0))
+
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode="w") as f:
+            path = f.name
+
+        try:
+            game.save_json(path)
+            loaded = GameState.load_json(path)
+
+            self.assertEqual(loaded.phase, GamePhase.SCORING)
+            self.assertIn((1, 0), loaded.dead_stones)
+        finally:
+            os.unlink(path)
+
+    def test_save_load_finished_state(self) -> None:
+        game = GameState(GameConfig(board_size=9))
+        game.play(0, 0)
+        game.resign()
+
+        with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode="w") as f:
+            path = f.name
+
+        try:
+            game.save_json(path)
+            loaded = GameState.load_json(path)
+
+            self.assertEqual(loaded.phase, GamePhase.FINISHED)
+            self.assertEqual(loaded.final_score.get("reason"), "Resignation")
         finally:
             os.unlink(path)
 
