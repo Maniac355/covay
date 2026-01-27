@@ -41,7 +41,7 @@ class _Section(QFrame):
     ) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #2a2a34; border-radius: 10px; }"
+            "QFrame { background-color: #ffffff; border-radius: 12px; border: 1px solid #e1e6f0; }"
         )
         layout = QVBoxLayout(self)
         layout.setContentsMargins(20, 16, 20, 16)
@@ -55,7 +55,7 @@ class _Section(QFrame):
         lbl_body = QLabel(body)
         lbl_body.setFont(theme.font_normal(12))
         lbl_body.setWordWrap(True)
-        lbl_body.setStyleSheet("color: #ccc; line-height: 1.5;")
+        lbl_body.setStyleSheet("color: #566070; line-height: 1.5;")
         lbl_body.setTextFormat(Qt.TextFormat.RichText)
         layout.addWidget(lbl_body)
 
@@ -70,14 +70,14 @@ class _Diagram(QFrame):
     def __init__(self, text: str, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #1e1e26; border-radius: 8px; }"
+            "QFrame { background-color: #f3f6fb; border-radius: 10px; border: 1px solid #e1e6f0; }"
         )
         layout = QVBoxLayout(self)
         layout.setContentsMargins(16, 12, 16, 12)
 
         lbl = QLabel(text)
         lbl.setFont(theme.font_mono(11))
-        lbl.setStyleSheet("color: #b0b080;")
+        lbl.setStyleSheet("color: #6f7a8a;")
         layout.addWidget(lbl)
 
 
@@ -101,19 +101,19 @@ class TutorialScreen(QWidget):
         # Header bar
         header = QWidget()
         header.setFixedHeight(60)
-        header.setStyleSheet("background-color: #22222a;")
+        header.setStyleSheet("background-color: #eef2f8;")
         h_layout = QHBoxLayout(header)
         h_layout.setContentsMargins(20, 0, 20, 0)
 
-        self._btn_back = QPushButton("Back to Menu")
+        self._btn_back = QPushButton("Về menu")
         self._btn_back.setStyleSheet(theme.SETUP_BACK_BUTTON)
         self._btn_back.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_back.clicked.connect(self.back_clicked)
         h_layout.addWidget(self._btn_back)
 
-        lbl_title = QLabel("How to Play Go")
+        lbl_title = QLabel("Hướng dẫn chơi Cờ Vây")
         lbl_title.setFont(theme.font_bold(18))
-        lbl_title.setStyleSheet("color: #c8a550;")
+        lbl_title.setStyleSheet("color: #b98f4f;")
         lbl_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         h_layout.addWidget(lbl_title, stretch=1)
 
@@ -138,174 +138,171 @@ class TutorialScreen(QWidget):
         # -- Sections --
 
         content_layout.addWidget(_Section(
-            "What is Go?",
-            "Go (also called <b>Cờ Vây</b>, Weiqi, or Baduk) is a strategic board game "
-            "for two players. It originated in China over 4,000 years ago and is one of "
-            "the oldest games still played today.<br><br>"
-            "The goal is simple: <b>control more territory</b> than your opponent by "
-            "placing stones on the intersections of a grid.",
+            "Cờ Vây là gì?",
+            "Cờ Vây (còn gọi là <b>Weiqi</b> hoặc <b>Baduk</b>) là trò chơi chiến thuật "
+            "dành cho hai người. Trò chơi có nguồn gốc từ Trung Quốc cách đây hơn 4.000 năm "
+            "và là một trong những trò chơi cổ nhất vẫn còn được chơi đến nay.<br><br>"
+            "Mục tiêu rất đơn giản: <b>kiểm soát nhiều đất hơn</b> đối thủ bằng cách "
+            "đặt quân lên các giao điểm của bàn cờ.",
         ))
 
         content_layout.addWidget(_Section(
-            "Basic Rules",
-            "<b>1. The Board:</b> Go is played on a grid of intersections. Standard sizes "
-            "are 9×9 (beginner), 13×13 (intermediate), and 19×19 (standard).<br><br>"
-            "<b>2. Stones:</b> Black plays first. Players alternate placing one stone per "
-            "turn on an empty intersection.<br><br>"
-            "<b>3. Liberties:</b> Each stone (or connected group of stones) has "
-            "<i>liberties</i> — the empty intersections directly adjacent to it "
-            "(up, down, left, right). A stone in the center has 4 liberties; on the edge, 3; "
-            "in the corner, 2.<br><br>"
-            "<b>4. Once placed, stones never move.</b> They can only be removed by capture.",
-            "#66aaff",
+            "Luật cơ bản",
+            "<b>1. Bàn cờ:</b> Cờ Vây chơi trên lưới các giao điểm. Kích thước chuẩn là "
+            "9×9 (người mới), 13×13 (trung cấp) và 19×19 (tiêu chuẩn).<br><br>"
+            "<b>2. Quân:</b> Đen đi trước. Hai bên lần lượt đặt một quân mỗi lượt vào "
+            "giao điểm trống.<br><br>"
+            "<b>3. Khí:</b> Mỗi quân (hoặc nhóm quân liên thông) có các <i>khí</i> — "
+            "các giao điểm trống kề trực tiếp (trên, dưới, trái, phải). Quân ở giữa có 4 khí; "
+            "ở cạnh có 3; ở góc có 2.<br><br>"
+            "<b>4. Đã đặt thì không di chuyển.</b> Quân chỉ bị lấy khỏi bàn khi bị bắt.",
+            "#78a6d8",
         ))
 
         content_layout.addWidget(_Diagram(
-            "  Liberties example:\n\n"
-            "    . . . . .        . = empty\n"
-            "    . . L . .        X = Black stone\n"
-            "    . L X L .        L = liberty of X\n"
+            "  Ví dụ về khí:\n\n"
+            "    . . . . .        . = ô trống\n"
+            "    . . L . .        X = quân Đen\n"
+            "    . L X L .        L = khí của X\n"
             "    . . L . .\n"
             "    . . . . .\n\n"
-            "  This single stone has 4 liberties."
+            "  Quân đơn này có 4 khí."
         ))
 
         content_layout.addWidget(_Section(
-            "Capturing Stones",
-            "When a stone or connected group of same-colour stones has <b>zero liberties</b>, "
-            "it is <b>captured</b> and removed from the board.<br><br>"
-            "You capture opponent stones by filling their last liberty. "
-            "Captures happen immediately when you place your stone.<br><br>"
-            "<b>Important:</b> If your move simultaneously removes the last liberty of an "
-            "opponent group AND your own group, the opponent's stones are captured first, "
-            "which may give your group liberties. This is NOT suicide — it is a legal capture.",
-            "#ff8866",
+            "Bắt quân",
+            "Khi một quân hoặc nhóm quân cùng màu <b>hết khí</b>, "
+            "chúng sẽ bị <b>bắt</b> và lấy khỏi bàn.<br><br>"
+            "Bạn bắt quân đối thủ bằng cách lấp nốt khí cuối cùng của họ. "
+            "Việc bắt diễn ra ngay sau khi bạn đặt quân.<br><br>"
+            "<b>Lưu ý:</b> Nếu nước đi của bạn đồng thời làm đối thủ hết khí "
+            "và nhóm của bạn cũng hết khí, quân đối thủ sẽ bị bắt trước, "
+            "từ đó nhóm của bạn có thể được thêm khí. Đây KHÔNG phải tự sát — "
+            "đó là một nước bắt hợp lệ.",
+            "#e38b6f",
         ))
 
         content_layout.addWidget(_Diagram(
-            "  Capture example:\n\n"
-            "    Before:          After Black plays A:\n"
+            "  Ví dụ bắt quân:\n\n"
+            "    Trước:           Sau khi Đen đi A:\n"
             "    . X . .          . X . .\n"
             "    X O A .    →     X . X .\n"
             "    . X . .          . X . .\n\n"
-            "  O = White stone with one liberty at A.\n"
-            "  Black plays A → White captured and removed."
+            "  O = quân Trắng còn 1 khí tại A.\n"
+            "  Đen đi A → Trắng bị bắt và lấy khỏi bàn."
         ))
 
         content_layout.addWidget(_Section(
-            "Ko Rule",
-            "A <b>ko</b> situation occurs when a single stone is captured and the opponent "
-            "could immediately recapture, creating an infinite loop.<br><br>"
-            "<b>Simple Ko:</b> You cannot immediately recapture the stone that was just taken. "
-            "You must play elsewhere first (a 'ko threat'), then you may recapture on your "
-            "next turn.<br><br>"
-            "<b>Positional Superko:</b> A stricter rule that prevents ANY board position from "
-            "repeating. This handles complex ko situations as well.",
-            "#cc88ff",
+            "Luật Ko",
+            "Tình huống <b>ko</b> xảy ra khi một quân bị bắt và đối thủ có thể bắt lại ngay, "
+            "tạo ra vòng lặp vô hạn.<br><br>"
+            "<b>Ko đơn giản:</b> Bạn không được bắt lại ngay quân vừa bị bắt. "
+            "Bạn phải đi chỗ khác trước (đòn 'đe doạ ko'), rồi mới có thể bắt lại ở lượt sau.<br><br>"
+            "<b>Siêu Ko theo vị trí:</b> Luật chặt hơn, không cho phép bất kỳ thế cờ nào "
+            "lặp lại. Luật này xử lý cả những tình huống ko phức tạp.",
+            "#b58ad6",
         ))
 
         content_layout.addWidget(_Diagram(
-            "  Ko example:\n\n"
+            "  Ví dụ ko:\n\n"
             "    . X O .          . X O .\n"
-            "    X O . O    →     X . X O     Black captures O\n"
-            "    . X O .          . X O .     at (1,1)\n\n"
-            "  White CANNOT immediately play back at the\n"
-            "  captured position. Must play elsewhere first."
+            "    X O . O    →     X . X O     Đen bắt O\n"
+            "    . X O .          . X O .     tại (1,1)\n\n"
+            "  Trắng KHÔNG được đi ngay vào\n"
+            "  vị trí vừa bị bắt. Phải đi chỗ khác trước."
         ))
 
         content_layout.addWidget(_Section(
-            "Suicide",
-            "A <b>suicide move</b> is one where your stone (or group) would have zero "
-            "liberties after placement, without capturing any opponent stones.<br><br>"
-            "By default, suicide is <b>forbidden</b> (you cannot make such a move). "
-            "Some rulesets allow it — you can toggle this in game settings.",
-            "#ff6699",
+            "Tự sát",
+            "Một <b>nước tự sát</b> là khi bạn đặt quân khiến quân (hoặc nhóm) của bạn "
+            "hết khí mà không bắt được quân đối thủ.<br><br>"
+            "Mặc định, tự sát <b>bị cấm</b>. Một số luật cho phép — "
+            "bạn có thể bật/tắt trong phần cài đặt.",
+            "#e3779a",
         ))
 
         content_layout.addWidget(_Section(
-            "Passing and End of Game",
-            "You may <b>pass</b> your turn instead of placing a stone. "
-            "When both players pass consecutively, the game enters "
-            "<b>Scoring Mode</b>.<br><br>"
-            "In Scoring Mode, players agree on which stones are 'dead' (will inevitably "
-            "be captured). Click on stone groups to mark them as dead/alive. Then confirm "
-            "to calculate the final score.",
-            "#66ccaa",
+            "Bỏ lượt và kết thúc ván",
+            "Bạn có thể <b>bỏ lượt</b> thay vì đặt quân. "
+            "Khi cả hai bên bỏ lượt liên tiếp, ván sẽ chuyển sang "
+            "<b>Chế độ tính điểm</b>.<br><br>"
+            "Trong chế độ tính điểm, hai bên thống nhất quân nào là 'chết' "
+            "(sẽ bị bắt chắc chắn). Nhấn vào nhóm quân để đánh dấu sống/chết, "
+            "sau đó xác nhận để tính điểm cuối.",
+            "#75bfa6",
         ))
 
         content_layout.addWidget(_Section(
-            "Scoring: Japanese Rules (Territory)",
-            "Under Japanese rules, your score consists of:<br><br>"
-            "<table style='color:#ccc;'>"
-            "<tr><td style='padding-right:20px;'><b>Territory</b></td>"
-            "<td>Empty intersections surrounded <i>only</i> by your stones</td></tr>"
-            "<tr><td><b>+ Captures</b></td>"
-            "<td>Number of opponent stones you captured during the game</td></tr>"
-            "<tr><td><b>+ Dead stones</b></td>"
-            "<td>Opponent's dead stones (agreed upon in scoring) count as captures</td></tr>"
+            "Tính điểm: Luật Nhật Bản (Tính đất)",
+            "Theo luật Nhật Bản, điểm của bạn gồm:<br><br>"
+            "<table style='color:#566070;'>"
+            "<tr><td style='padding-right:20px;'><b>Đất</b></td>"
+            "<td>Các giao điểm trống được bao quanh <i>chỉ</i> bởi quân của bạn</td></tr>"
+            "<tr><td><b>+ Bắt quân</b></td>"
+            "<td>Số quân đối thủ bị bạn bắt trong ván</td></tr>"
+            "<tr><td><b>+ Quân chết</b></td>"
+            "<td>Quân chết của đối thủ (thống nhất khi tính điểm) được tính như bắt quân</td></tr>"
             "<tr><td><b>+ Komi</b></td>"
-            "<td>White receives komi (compensation for going second)</td></tr>"
+            "<td>Trắng nhận komi (bù cho việc đi sau)</td></tr>"
             "</table><br>"
-            "<b>Default komi:</b> 19×19 → 6.5 · 13×13 → 5.5 · 9×9 → 3.5<br><br>"
-            "The half-point (0.5) in komi ensures there is no tie.",
-            "#ffbb44",
+            "<b>Komi mặc định:</b> 19×19 → 6.5 · 13×13 → 5.5 · 9×9 → 3.5<br><br>"
+            "Nửa điểm (0.5) của komi giúp tránh hòa.",
+            "#d9b05c",
         ))
 
         content_layout.addWidget(_Diagram(
-            "  Japanese scoring example (9x9):\n\n"
-            "  Komi = 3.5 (for White)\n\n"
-            "  Black: 20 territory + 4 captures      = 24.0\n"
-            "  White: 18 territory + 2 captures + 3.5 = 23.5\n\n"
-            "  → Black wins by 0.5 points"
+            "  Ví dụ tính điểm Nhật (9x9):\n\n"
+            "  Komi = 3.5 (cho Trắng)\n\n"
+            "  Đen: 20 đất + 4 bắt quân      = 24.0\n"
+            "  Trắng: 18 đất + 2 bắt quân + 3.5 = 23.5\n\n"
+            "  → Đen thắng 0.5 điểm"
         ))
 
         content_layout.addWidget(_Section(
-            "Scoring: Chinese Rules (Area)",
-            "Under Chinese rules, your score consists of:<br><br>"
-            "<table style='color:#ccc;'>"
-            "<tr><td style='padding-right:20px;'><b>Stones on board</b></td>"
-            "<td>Number of your stones remaining on the board</td></tr>"
-            "<tr><td><b>+ Territory</b></td>"
-            "<td>Empty intersections surrounded only by your stones</td></tr>"
+            "Tính điểm: Luật Trung Quốc (Tính diện tích)",
+            "Theo luật Trung Quốc, điểm của bạn gồm:<br><br>"
+            "<table style='color:#566070;'>"
+            "<tr><td style='padding-right:20px;'><b>Quân trên bàn</b></td>"
+            "<td>Số quân còn lại của bạn trên bàn</td></tr>"
+            "<tr><td><b>+ Đất</b></td>"
+            "<td>Các giao điểm trống được bao quanh bởi quân của bạn</td></tr>"
             "<tr><td><b>+ Komi</b></td>"
-            "<td>White receives komi</td></tr>"
+            "<td>Trắng nhận komi</td></tr>"
             "</table><br>"
-            "Note: Captures are NOT counted separately in Chinese rules, because captured "
-            "stones reduce the opponent's stones on the board.",
-            "#44bbff",
+            "Lưu ý: Bắt quân KHÔNG được tính riêng trong luật Trung Quốc, "
+            "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ.",
+            "#6aa9e0",
         ))
 
         content_layout.addWidget(_Diagram(
-            "  Chinese scoring example (9x9):\n\n"
-            "  Komi = 3.5 (for White)\n\n"
-            "  Black: 30 stones + 10 territory      = 40.0\n"
-            "  White: 25 stones + 12 territory + 3.5 = 40.5\n\n"
-            "  → White wins by 0.5 points"
+            "  Ví dụ tính điểm Trung Quốc (9x9):\n\n"
+            "  Komi = 3.5 (cho Trắng)\n\n"
+            "  Đen: 30 quân + 10 đất      = 40.0\n"
+            "  Trắng: 25 quân + 12 đất + 3.5 = 40.5\n\n"
+            "  → Trắng thắng 0.5 điểm"
         ))
 
         content_layout.addWidget(_Section(
-            "Japanese vs Chinese: When Does It Matter?",
-            "In most normal games, both scoring methods give the <b>same winner</b>. "
-            "The difference arises in edge cases:<br><br>"
-            "• In Japanese rules, you lose a point for each stone you place in your own "
-            "territory (filling dame / defensive moves). In Chinese rules, you don't.<br>"
-            "• Chinese rules encourage filling dame (neutral points), since your stones on "
-            "the board count toward your score.<br>"
-            "• Chinese rules are simpler to verify and less dispute-prone.<br>"
-            "• Japanese rules are traditional in professional play in Japan and Korea.",
-            "#aabb66",
+            "Nhật Bản vs Trung Quốc: Khi nào khác biệt?",
+            "Trong đa số ván thông thường, hai cách tính điểm cho ra <b>cùng người thắng</b>. "
+            "Sự khác biệt chỉ xuất hiện ở một số tình huống đặc biệt:<br><br>"
+            "• Luật Nhật: bạn mất điểm khi tự đi vào đất của mình (điền dame / phòng thủ). "
+            "Luật Trung Quốc thì không.<br>"
+            "• Luật Trung Quốc khuyến khích điền dame, vì quân trên bàn cũng tính điểm.<br>"
+            "• Luật Trung Quốc dễ kiểm tra và ít tranh cãi hơn.<br>"
+            "• Luật Nhật là truyền thống trong thi đấu chuyên nghiệp ở Nhật và Hàn.",
+            "#9aa663",
         ))
 
         content_layout.addWidget(_Section(
-            "Tips for Beginners",
-            "• <b>Start with 9×9</b> to learn the basics before moving to 19×19.<br>"
-            "• <b>Don't try to capture everything.</b> Focus on building territory.<br>"
-            "• <b>Connect your stones</b> to form strong groups.<br>"
-            "• <b>Keep your groups alive</b> — a group needs two 'eyes' (internal liberties) "
-            "to be permanently safe.<br>"
-            "• <b>Don't be afraid to pass.</b> If you can't find a useful move, pass.<br>"
-            "• <b>Have fun!</b> Go is a journey — you'll improve with every game.",
-            "#88ddaa",
+            "Mẹo cho người mới",
+            "• <b>Bắt đầu với 9×9</b> để nắm cơ bản trước khi lên 19×19.<br>"
+            "• <b>Đừng cố bắt mọi thứ.</b> Hãy tập trung xây đất.<br>"
+            "• <b>Kết nối các quân</b> để tạo nhóm mạnh.<br>"
+            "• <b>Giữ nhóm sống</b> — một nhóm cần hai 'mắt' (khí bên trong) để an toàn lâu dài.<br>"
+            "• <b>Đừng ngại bỏ lượt.</b> Nếu không có nước đi hữu ích, hãy bỏ lượt.<br>"
+            "• <b>Chúc vui!</b> Cờ Vây là hành trình — bạn sẽ tiến bộ sau mỗi ván.",
+            "#7fbfa1",
         ))
 
         content_layout.addSpacing(30)
@@ -319,7 +316,7 @@ class TutorialScreen(QWidget):
         p = QPainter(self)
         w, h = self.width(), self.height()
         grad = QLinearGradient(0, 0, w, h)
-        grad.setColorAt(0.0, QColor(24, 24, 32))
-        grad.setColorAt(1.0, QColor(30, 30, 40))
+        grad.setColorAt(0.0, QColor(246, 248, 252))
+        grad.setColorAt(1.0, QColor(235, 239, 247))
         p.fillRect(self.rect(), grad)
         p.end()

@@ -65,20 +65,20 @@ class _SelectCard(QFrame):
             lbl_icon = QLabel(self._icon)
             lbl_icon.setFont(theme.font_bold(28))
             lbl_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            lbl_icon.setStyleSheet("color: #c8a550;")
+            lbl_icon.setStyleSheet("color: #b98f4f;")
             layout.addWidget(lbl_icon)
 
         lbl_title = QLabel(self._title)
         lbl_title.setFont(theme.font_bold(14))
         lbl_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        lbl_title.setStyleSheet("color: #e6e6e6;")
+        lbl_title.setStyleSheet("color: #3a3f49;")
         layout.addWidget(lbl_title)
 
         lbl_desc = QLabel(self._desc)
         lbl_desc.setFont(theme.font_normal(10))
         lbl_desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
         lbl_desc.setWordWrap(True)
-        lbl_desc.setStyleSheet("color: #999;")
+        lbl_desc.setStyleSheet("color: #7a828f;")
         layout.addWidget(lbl_desc)
 
         layout.addStretch()
@@ -157,15 +157,15 @@ class GameSetupScreen(QWidget):
 
         # Header
         header = QHBoxLayout()
-        self._btn_back = QPushButton("Back")
+        self._btn_back = QPushButton("Quay lại")
         self._btn_back.setStyleSheet(theme.SETUP_BACK_BUTTON)
         self._btn_back.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_back.clicked.connect(self.back_clicked)
         header.addWidget(self._btn_back)
         header.addStretch()
-        lbl_title = QLabel("New Game")
+        lbl_title = QLabel("Ván mới")
         lbl_title.setFont(theme.font_bold(22))
-        lbl_title.setStyleSheet("color: #c8a550;")
+        lbl_title.setStyleSheet("color: #b98f4f;")
         header.addWidget(lbl_title)
         header.addStretch()
         # Invisible spacer to balance the back button
@@ -178,19 +178,19 @@ class GameSetupScreen(QWidget):
         outer.addSpacing(24)
 
         # -- Board size section --
-        lbl_size = QLabel("Board Size")
+        lbl_size = QLabel("Kích thước bàn cờ")
         lbl_size.setFont(theme.font_bold(15))
-        lbl_size.setStyleSheet("color: #e6e6e6;")
+        lbl_size.setStyleSheet("color: #3a3f49;")
         outer.addWidget(lbl_size)
         outer.addSpacing(10)
 
         size_row = QHBoxLayout()
         size_row.setSpacing(16)
-        size_row.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
-        card_9 = _SelectCard("9 × 9", "Quick games\n~15 minutes", "9")
-        card_13 = _SelectCard("13 × 13", "Medium games\n~30 minutes", "13")
-        card_19 = _SelectCard("19 × 19", "Standard games\n~60+ minutes", "19")
+        size_row.addStretch()
+        card_9 = _SelectCard("9 × 9", "Ván nhanh\n~15 phút", "9")
+        card_13 = _SelectCard("13 × 13", "Ván trung bình\n~30 phút", "13")
+        card_19 = _SelectCard("19 × 19", "Ván tiêu chuẩn\n~60+ phút", "19")
 
         for card in [card_9, card_13, card_19]:
             self._size_group.add(card)
@@ -203,24 +203,24 @@ class GameSetupScreen(QWidget):
         outer.addSpacing(24)
 
         # -- Ruleset section --
-        lbl_rules = QLabel("Ruleset")
+        lbl_rules = QLabel("Luật chơi")
         lbl_rules.setFont(theme.font_bold(15))
-        lbl_rules.setStyleSheet("color: #e6e6e6;")
+        lbl_rules.setStyleSheet("color: #3a3f49;")
         outer.addWidget(lbl_rules)
         outer.addSpacing(10)
 
         rule_row = QHBoxLayout()
         rule_row.setSpacing(16)
-        rule_row.setAlignment(Qt.AlignmentFlag.AlignLeft)
 
+        rule_row.addStretch()
         card_jp = _SelectCard(
-            "Japanese",
-            "Territory scoring\nCaptures count",
+            "Nhật Bản",
+            "Tính đất\nCó tính bắt quân",
             "JP",
         )
         card_cn = _SelectCard(
-            "Chinese",
-            "Area scoring\nStones + Territory",
+            "Trung Quốc",
+            "Tính diện tích\nQuân + Đất",
             "CN",
         )
 
@@ -239,9 +239,9 @@ class GameSetupScreen(QWidget):
 
         # Komi
         komi_col = QVBoxLayout()
-        lbl_komi = QLabel("Komi (compensation for White)")
+        lbl_komi = QLabel("Komi (bù điểm cho Trắng)")
         lbl_komi.setFont(theme.font_bold(12))
-        lbl_komi.setStyleSheet("color: #ccc;")
+        lbl_komi.setStyleSheet("color: #6f7786;")
         komi_col.addWidget(lbl_komi)
         self._komi_spin = QDoubleSpinBox()
         self._komi_spin.setRange(0.0, 99.5)
@@ -254,27 +254,26 @@ class GameSetupScreen(QWidget):
 
         # Ko rule
         ko_col = QVBoxLayout()
-        lbl_ko = QLabel("Ko Rule")
+        lbl_ko = QLabel("Luật Ko")
         lbl_ko.setFont(theme.font_bold(12))
-        lbl_ko.setStyleSheet("color: #ccc;")
+        lbl_ko.setStyleSheet("color: #6f7786;")
         ko_col.addWidget(lbl_ko)
         self._ko_combo = QComboBox()
-        self._ko_combo.addItems(["Simple Ko", "Positional Superko"])
+        self._ko_combo.addItems(["Ko đơn giản", "Siêu Ko theo vị trí"])
         self._ko_combo.setFixedWidth(200)
         ko_col.addWidget(self._ko_combo)
         detail_row.addLayout(ko_col)
 
         # Suicide
         suicide_col = QVBoxLayout()
-        lbl_sui = QLabel("Advanced")
+        lbl_sui = QLabel("Nâng cao")
         lbl_sui.setFont(theme.font_bold(12))
-        lbl_sui.setStyleSheet("color: #ccc;")
+        lbl_sui.setStyleSheet("color: #6f7786;")
         suicide_col.addWidget(lbl_sui)
-        self._suicide_check = QCheckBox("Allow suicide moves")
+        self._suicide_check = QCheckBox("Cho phép nước đi tự sát")
         suicide_col.addWidget(self._suicide_check)
         detail_row.addLayout(suicide_col)
-
-        detail_row.addStretch()
+        detail_row.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         outer.addLayout(detail_row)
 
         outer.addStretch()
@@ -282,7 +281,7 @@ class GameSetupScreen(QWidget):
         # -- Start button --
         bottom = QHBoxLayout()
         bottom.addStretch()
-        self._btn_start = QPushButton("Start Game")
+        self._btn_start = QPushButton("Bắt đầu ván")
         self._btn_start.setStyleSheet(theme.SETUP_START_BUTTON)
         self._btn_start.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_start.clicked.connect(self._on_start)
@@ -318,7 +317,7 @@ class GameSetupScreen(QWidget):
         p = QPainter(self)
         w, h = self.width(), self.height()
         grad = QLinearGradient(0, 0, w, h)
-        grad.setColorAt(0.0, QColor(24, 24, 32))
-        grad.setColorAt(1.0, QColor(32, 32, 42))
+        grad.setColorAt(0.0, QColor(246, 248, 252))
+        grad.setColorAt(1.0, QColor(233, 238, 247))
         p.fillRect(self.rect(), grad)
         p.end()

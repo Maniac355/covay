@@ -75,22 +75,22 @@ class MainMenuScreen(QWidget):
         center.setSpacing(18)
 
         # Buttons
-        self._btn_new = QPushButton("New Game")
+        self._btn_new = QPushButton("Ván mới")
         self._btn_new.setStyleSheet(theme.menu_button_gold())
         self._btn_new.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_new.clicked.connect(self.new_game_clicked)
 
-        self._btn_load = QPushButton("Load Game")
+        self._btn_load = QPushButton("Tải ván")
         self._btn_load.setStyleSheet(theme.menu_button_outline())
         self._btn_load.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_load.clicked.connect(self.load_game_clicked)
 
-        self._btn_tutorial = QPushButton("How to Play")
+        self._btn_tutorial = QPushButton("Hướng dẫn chơi")
         self._btn_tutorial.setStyleSheet(theme.menu_button_outline())
         self._btn_tutorial.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_tutorial.clicked.connect(self.tutorial_clicked)
 
-        self._btn_quit = QPushButton("Quit")
+        self._btn_quit = QPushButton("Thoát")
         self._btn_quit.setStyleSheet(theme.menu_button_danger())
         self._btn_quit.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_quit.clicked.connect(self.quit_clicked)
@@ -112,13 +112,13 @@ class MainMenuScreen(QWidget):
 
         # Background gradient
         grad = QLinearGradient(0, 0, w, h)
-        grad.setColorAt(0.0, QColor(22, 22, 30))
-        grad.setColorAt(0.5, QColor(30, 30, 40))
-        grad.setColorAt(1.0, QColor(22, 22, 30))
+        grad.setColorAt(0.0, QColor(246, 248, 252))
+        grad.setColorAt(0.5, QColor(233, 238, 247))
+        grad.setColorAt(1.0, QColor(246, 248, 252))
         p.fillRect(self.rect(), grad)
 
         # Decorative grid lines (subtle)
-        p.setPen(QPen(QColor(255, 255, 255, 8), 1))
+        p.setPen(QPen(QColor(120, 130, 150, 25), 1))
         spacing = 40
         for i in range(0, max(w, h) + spacing, spacing):
             if i < w:
@@ -134,9 +134,9 @@ class MainMenuScreen(QWidget):
             alpha = int(s["alpha"] * 255)
 
             if s["black"]:
-                color = QColor(20, 20, 20, alpha)
+                color = QColor(80, 80, 90, alpha)
             else:
-                color = QColor(220, 220, 215, alpha)
+                color = QColor(240, 240, 235, alpha)
 
             p.setPen(Qt.PenStyle.NoPen)
             p.setBrush(QBrush(color))
@@ -147,19 +147,19 @@ class MainMenuScreen(QWidget):
         p.setFont(title_font)
         p.setPen(QPen(theme.MENU_ACCENT))
         title_rect = QRectF(0, h * 0.12, w, 60)
-        p.drawText(title_rect, Qt.AlignmentFlag.AlignCenter, "Go")
+        p.drawText(title_rect, Qt.AlignmentFlag.AlignCenter, "Cờ Vây")
 
         # Subtitle
         sub_font = theme.font_normal(16)
         p.setFont(sub_font)
         p.setPen(QPen(theme.MENU_TEXT_DIM))
         sub_rect = QRectF(0, h * 0.12 + 55, w, 30)
-        p.drawText(sub_rect, Qt.AlignmentFlag.AlignCenter, "The Ancient Game of Strategy")
+        p.drawText(sub_rect, Qt.AlignmentFlag.AlignCenter, "Trò chơi chiến thuật cổ xưa")
 
         # Version / footer
         footer_font = theme.font_normal(10)
         p.setFont(footer_font)
-        p.setPen(QPen(QColor(100, 100, 110)))
+        p.setPen(QPen(QColor(120, 130, 145)))
         footer_rect = QRectF(0, h - 30, w, 20)
         p.drawText(footer_rect, Qt.AlignmentFlag.AlignCenter, "Cờ Vây  ·  Weiqi  ·  Baduk")
 

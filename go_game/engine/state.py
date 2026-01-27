@@ -71,11 +71,11 @@ class GameConfig:
     @staticmethod
     def from_dict(d: dict[str, Any]) -> "GameConfig":
         return GameConfig(
-            board_size=d["board_size"],
-            ruleset=Ruleset[d["ruleset"]],
-            komi=d["komi"],
-            ko_rule=KoRule[d["ko_rule"]],
-            allow_suicide=d["allow_suicide"],
+            board_size=d.get("board_size", 19),
+            ruleset=Ruleset[d.get("ruleset", Ruleset.JAPANESE.name)],
+            komi=d.get("komi", 6.5),
+            ko_rule=KoRule[d.get("ko_rule", KoRule.SIMPLE.name)],
+            allow_suicide=d.get("allow_suicide", False),
         )
 
 
@@ -309,6 +309,8 @@ class GameState:
             "consecutive_passes": self.consecutive_passes,
             "move_number": self.move_number,
             "phase": self.phase.name,
+            "dead_stones": [list(p) for p in sorted(self.dead_stones)],
+            "final_score": self.final_score,
             "moves": moves,
         }
 
@@ -318,7 +320,7 @@ class GameState:
         config = GameConfig.from_dict(d["config"])
         state = GameState(config)
         # Replay moves
-        for m in d["moves"]:
+        for m in d.get("moves", []):
             color = Stone(m["color"])
             # Ensure it's the right turn
             if state.current_turn != color:
@@ -332,6 +334,20 @@ class GameState:
                     # Fallback: force-place (shouldn't happen with valid saves)
                     state.board.set(row, col, color)
                     state.current_turn = color.opponent()
+                    state.move_number += 1
+        if "current_turn" in d:
+            state.current_turn = Stone(d["current_turn"])
+        state.consecutive_passes = d.get("consecutive_passes", state.consecutive_passes)
+        state.move_number = d.get("move_number", state.move_number)
+        if "phase" in d:
+            try:
+                state.phase = GamePhase[d["phase"]]
+            except KeyError:
+                pass
+        dead_stones = d.get("dead_stones", [])
+        state.dead_stones = {tuple(p) for p in dead_stones}
+        if "final_score" in d:
+            state.final_score = d["final_score"]
         return state
 
     def save_json(self, filepath: str) -> None:

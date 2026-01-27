@@ -15,10 +15,10 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient
 # Board colours
 # ---------------------------------------------------------------------------
 
-BOARD_BG = QColor(220, 179, 92)          # warm wood
-BOARD_BG_LIGHT = QColor(235, 200, 120)   # lighter wood for gradient
-GRID_COLOR = QColor(60, 40, 20)          # dark brown grid lines
-HOSHI_COLOR = QColor(60, 40, 20)
+BOARD_BG = QColor(230, 196, 120)          # warm wood
+BOARD_BG_LIGHT = QColor(244, 222, 170)   # lighter wood for gradient
+GRID_COLOR = QColor(80, 55, 30)          # softened brown grid lines
+HOSHI_COLOR = QColor(80, 55, 30)
 
 # ---------------------------------------------------------------------------
 # Stone colours
@@ -58,23 +58,23 @@ TERRITORY_WHITE = QColor(255, 255, 255, 80)
 # Info panel
 # ---------------------------------------------------------------------------
 
-PANEL_BG = QColor(45, 45, 50)
-PANEL_TEXT = QColor(230, 230, 230)
-PANEL_ACCENT = QColor(100, 180, 255)
+PANEL_BG = QColor(245, 247, 252)
+PANEL_TEXT = QColor(45, 50, 60)
+PANEL_ACCENT = QColor(90, 140, 220)
 
 # ---------------------------------------------------------------------------
 # Menu / setup colours
 # ---------------------------------------------------------------------------
 
-MENU_BG_DARK = QColor(28, 28, 35)
-MENU_BG_MID = QColor(38, 38, 48)
-MENU_ACCENT = QColor(200, 165, 80)        # gold
-MENU_ACCENT_HOVER = QColor(230, 195, 100)
-MENU_TEXT = QColor(230, 230, 230)
-MENU_TEXT_DIM = QColor(150, 150, 160)
-MENU_CARD_BG = QColor(48, 48, 58)
-MENU_CARD_BORDER = QColor(70, 70, 85)
-MENU_CARD_SELECTED = QColor(200, 165, 80)
+MENU_BG_DARK = QColor(245, 247, 252)
+MENU_BG_MID = QColor(232, 237, 246)
+MENU_ACCENT = QColor(170, 130, 60)        # warm accent
+MENU_ACCENT_HOVER = QColor(190, 150, 80)
+MENU_TEXT = QColor(50, 55, 65)
+MENU_TEXT_DIM = QColor(110, 120, 135)
+MENU_CARD_BG = QColor(255, 255, 255)
+MENU_CARD_BORDER = QColor(210, 218, 230)
+MENU_CARD_SELECTED = QColor(180, 140, 70)
 
 # ---------------------------------------------------------------------------
 # Fonts
@@ -122,54 +122,54 @@ def board_gradient(width: float, height: float) -> QLinearGradient:
 
 APP_STYLESHEET = """
 QMainWindow {
-    background-color: #1c1c23;
+    background-color: #f4f6fb;
 }
 QWidget#central {
-    background-color: #1c1c23;
+    background-color: #f4f6fb;
 }
 QLabel {
-    color: #e6e6e6;
+    color: #2f3440;
     font-family: "Segoe UI";
     font-size: 12px;
     background: transparent;
 }
 QPushButton {
-    background-color: #3a3a42;
-    color: #e6e6e6;
-    border: 1px solid #555;
-    border-radius: 4px;
-    padding: 6px 14px;
+    background-color: #ffffff;
+    color: #2f3440;
+    border: 1px solid #d6dbe6;
+    border-radius: 12px;
+    padding: 7px 16px;
     font-family: "Segoe UI";
     font-size: 12px;
     min-width: 70px;
 }
 QPushButton:hover {
-    background-color: #4a4a55;
-    border-color: #77a;
+    background-color: #eef1f8;
+    border-color: #bfc8d8;
 }
 QPushButton:pressed {
-    background-color: #555566;
+    background-color: #e2e7f1;
 }
 QPushButton:disabled {
-    background-color: #2a2a30;
-    color: #666;
-    border-color: #444;
+    background-color: #f1f3f8;
+    color: #9aa3b2;
+    border-color: #e0e4ee;
 }
 QListWidget {
-    background-color: #35353c;
-    color: #e6e6e6;
-    border: 1px solid #555;
-    border-radius: 4px;
+    background-color: #ffffff;
+    color: #2f3440;
+    border: 1px solid #d6dbe6;
+    border-radius: 12px;
     font-family: "Consolas";
     font-size: 11px;
 }
 QListWidget::item:selected {
-    background-color: #4a5a7a;
+    background-color: #e4ecfb;
 }
 QGroupBox {
-    color: #e6e6e6;
-    border: 1px solid #555;
-    border-radius: 4px;
+    color: #2f3440;
+    border: 1px solid #d6dbe6;
+    border-radius: 14px;
     margin-top: 8px;
     padding-top: 12px;
     font-family: "Segoe UI";
@@ -182,35 +182,35 @@ QGroupBox::title {
     padding: 0 4px;
 }
 QComboBox, QSpinBox, QDoubleSpinBox {
-    background-color: #3a3a42;
-    color: #e6e6e6;
-    border: 1px solid #555;
-    border-radius: 4px;
+    background-color: #ffffff;
+    color: #2f3440;
+    border: 1px solid #d6dbe6;
+    border-radius: 12px;
     padding: 4px 8px;
     font-family: "Segoe UI";
     font-size: 12px;
 }
 QComboBox:hover, QSpinBox:hover, QDoubleSpinBox:hover {
-    border-color: #77a;
+    border-color: #bfc8d8;
 }
 QComboBox QAbstractItemView {
-    background-color: #3a3a42;
-    color: #e6e6e6;
-    selection-background-color: #4a5a7a;
-    border: 1px solid #555;
+    background-color: #ffffff;
+    color: #2f3440;
+    selection-background-color: #e4ecfb;
+    border: 1px solid #d6dbe6;
 }
 QCheckBox {
-    color: #e6e6e6;
+    color: #2f3440;
     font-family: "Segoe UI";
     font-size: 12px;
     spacing: 6px;
 }
 QDialog {
-    background-color: #2d2d32;
+    background-color: #f8f9fc;
 }
 QStatusBar {
-    background-color: #18181e;
-    color: #aaa;
+    background-color: #eef1f7;
+    color: #6b7485;
     font-size: 11px;
 }
 QScrollArea {
@@ -218,17 +218,17 @@ QScrollArea {
     background: transparent;
 }
 QScrollBar:vertical {
-    background: #2a2a32;
+    background: #edf0f6;
     width: 10px;
-    border-radius: 5px;
+    border-radius: 6px;
 }
 QScrollBar::handle:vertical {
-    background: #555;
-    border-radius: 5px;
+    background: #c9d2e2;
+    border-radius: 6px;
     min-height: 30px;
 }
 QScrollBar::handle:vertical:hover {
-    background: #777;
+    background: #b7c1d4;
 }
 QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
     height: 0px;
@@ -244,7 +244,7 @@ QPushButton {{
     background-color: {bg};
     color: {fg};
     border: 2px solid {border};
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 14px 32px;
     font-family: "Segoe UI";
     font-size: {font_size}px;
@@ -263,49 +263,49 @@ QPushButton:pressed {{
 
 def menu_button_gold() -> str:
     return MENU_BUTTON_STYLE.format(
-        bg="#c8a550", fg="#1c1c23", border="#c8a550",
+        bg="#e9d7b5", fg="#503a1f", border="#e0cca3",
         font_size=15,
-        hover_bg="#dab860", hover_border="#e6cc80",
-        pressed_bg="#b09040",
+        hover_bg="#f2e3c9", hover_border="#d4be94",
+        pressed_bg="#dcc8a2",
     )
 
 
 def menu_button_outline() -> str:
     return MENU_BUTTON_STYLE.format(
-        bg="transparent", fg="#e6e6e6", border="#666",
+        bg="#ffffff", fg="#39404d", border="#d6dbe6",
         font_size=14,
-        hover_bg="#35354040", hover_border="#c8a550",
-        pressed_bg="#45455050",
+        hover_bg="#edf1f7", hover_border="#c9d2e2",
+        pressed_bg="#e2e7f1",
     )
 
 
 def menu_button_danger() -> str:
     return MENU_BUTTON_STYLE.format(
-        bg="transparent", fg="#cc6666", border="#663333",
+        bg="#fff5f5", fg="#b45555", border="#e8c9c9",
         font_size=14,
-        hover_bg="#33222240", hover_border="#cc6666",
-        pressed_bg="#44333350",
+        hover_bg="#ffe6e6", hover_border="#d9a5a5",
+        pressed_bg="#f5dada",
     )
 
 
 CARD_STYLE_NORMAL = """
-    background-color: #303038;
-    border: 2px solid #50505a;
-    border-radius: 10px;
+    background-color: #ffffff;
+    border: 2px solid #d6dbe6;
+    border-radius: 14px;
 """
 
 CARD_STYLE_SELECTED = """
-    background-color: #3a3530;
-    border: 2px solid #c8a550;
-    border-radius: 10px;
+    background-color: #f6efe3;
+    border: 2px solid #d9c09a;
+    border-radius: 14px;
 """
 
 SETUP_START_BUTTON = """
 QPushButton {
-    background-color: #c8a550;
-    color: #1c1c23;
+    background-color: #e9d7b5;
+    color: #503a1f;
     border: none;
-    border-radius: 8px;
+    border-radius: 14px;
     padding: 14px 48px;
     font-family: "Segoe UI";
     font-size: 16px;
@@ -313,27 +313,27 @@ QPushButton {
     min-width: 200px;
 }
 QPushButton:hover {
-    background-color: #dab860;
+    background-color: #f2e3c9;
 }
 QPushButton:pressed {
-    background-color: #b09040;
+    background-color: #dcc8a2;
 }
 """
 
 SETUP_BACK_BUTTON = """
 QPushButton {
-    background-color: transparent;
-    color: #aaa;
-    border: 1px solid #555;
-    border-radius: 6px;
+    background-color: #ffffff;
+    color: #6b7485;
+    border: 1px solid #d6dbe6;
+    border-radius: 12px;
     padding: 8px 24px;
     font-family: "Segoe UI";
     font-size: 13px;
     min-width: 100px;
 }
 QPushButton:hover {
-    color: #e6e6e6;
-    border-color: #888;
-    background-color: #ffffff10;
+    color: #3a4150;
+    border-color: #c6cddb;
+    background-color: #f2f4f9;
 }
 """
