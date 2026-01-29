@@ -167,10 +167,7 @@ class GameScreen(QWidget):
         # Scoring mode buttons (hidden until scoring phase)
         self._btn_confirm_score = QPushButton("Xác nhận điểm")
         self._btn_confirm_score.setVisible(False)
-        self._btn_confirm_score.setStyleSheet(
-            "QPushButton { background-color: #e9d7b5; color: #503a1f; font-weight: bold; }"
-            "QPushButton:hover { background-color: #f2e3c9; }"
-        )
+        self._btn_confirm_score.setStyleSheet(theme.SCORE_CONFIRM_BUTTON)
         self._btn_resume_play = QPushButton("Tiếp tục chơi")
         self._btn_resume_play.setVisible(False)
         row4 = QHBoxLayout()
