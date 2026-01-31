@@ -74,7 +74,7 @@ class _Illustration(QFrame):
     def __init__(self, title: str, body: str, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #f3f6fb; border-radius: 12px; border: 1px solid #e1e6f0; }"
+            "QFrame { background-color: #e6ebf3; border-radius: 12px; border: 1px solid #d2d8e5; }"
         )
         layout = QVBoxLayout(self)
         layout.setContentsMargins(
@@ -187,14 +187,16 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ký hiệu quân cờ",
-                "<div style='font-family: \"Segoe UI\"; font-size: 14px; color:#566070;'>"
+                "<div style='font-family: \"Segoe UI\"; font-size: 14px; color:#4f5866;'>"
                 "<b style='color:#111;'>●</b> Quân Đen &nbsp;&nbsp; "
-                "<b style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</b> Quân Trắng "
-                "&nbsp;&nbsp; <b style='color:#c2c7d1;'>●</b> Đánh dấu khí &nbsp;&nbsp; "
-                "<b style='color:#9aa3b2;'>·</b> Giao điểm trống<br><br>"
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; "
+                "border: 1px solid #6b7485; border-radius: 50%; padding: 1px 3px;'>○</span> "
+                "Quân Trắng &nbsp;&nbsp; <b style='color:#c2c7d1;'>●</b> Đánh dấu khí &nbsp;&nbsp; "
+                "<b style='color:#8c95a4;'>·</b> Giao điểm trống<br><br>"
                 "<span style='font-size: 20px; color:#111;'>● ● ● ●</span>"
                 "&nbsp;&nbsp;"
-                "<span style='font-size: 20px; color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○ ○ ○</span>"
+                "<span style='font-size: 20px; color:#ffffff; text-shadow: 0 0 1px #3f4755; "
+                "border: 1px solid #6b7485; border-radius: 50%; padding: 1px 3px;'>○ ○ ○</span>"
                 "</div>",
             ),
         ))
@@ -277,7 +279,7 @@ class TutorialScreen(QWidget):
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>\n"
                 "<span style='color:#111;'>●</span> "
-                "<span style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#a06c2c;'>A</span> <span style='color:#9aa3b2;'>·</span>"
                 "  →  "
                 "<span style='color:#111;'>●</span> <span style='color:#9aa3b2;'>·</span> "
@@ -311,26 +313,26 @@ class TutorialScreen(QWidget):
                 "<span>Trước</span><span>Sau khi Đen bắt</span></div>"
                 "<pre style='font-family: Consolas; font-size: 13px; line-height: 1.5; margin: 6px 0 0;'>"
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#9aa3b2;'>·</span>"
                 "    "
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#9aa3b2;'>·</span>\n"
                 "<span style='color:#111;'>●</span> "
-                "<span style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</span>"
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span>"
                 "  →  "
                 "<span style='color:#111;'>●</span> <span style='color:#9aa3b2;'>·</span> "
                 "<span style='color:#111;'>●</span> "
-                "<span style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</span>\n"
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span>\n"
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#9aa3b2;'>·</span>"
                 "    "
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#f7f7f7; text-shadow: 0 0 1px #6b7485;'>○</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#9aa3b2;'>·</span>"
                 "</pre>"
                 "<div style='margin-top: 6px; font-weight: 600;'>Trắng không được bắt lại ngay.</div>"
@@ -362,7 +364,7 @@ class TutorialScreen(QWidget):
                 "Chuỗi lượt",
                 "<div style='font-family: \"Segoe UI\"; font-size: 12px;'>"
                 "<span style='color:#1b1b1b;'>●</span> Đen đi &nbsp;→&nbsp; "
-                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> Trắng đi "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> Trắng đi "
                 "&nbsp;→&nbsp; <b>Bỏ lượt</b> × 2<br><br>"
                 "<span style='color:#7b8393;'>Ván chuyển sang tính điểm.</span>"
                 "</div>",
@@ -393,7 +395,7 @@ class TutorialScreen(QWidget):
                 "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
                 "<b>Komi:</b> 3.5 (Trắng)<br>"
                 "<span style='color:#1b1b1b;'>●</span> Đen: 20 đất + 4 bắt = 24.0<br>"
-                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "Trắng: 18 đất + 2 bắt + 3.5 = 23.5<br><br>"
                 "<b>Đen thắng 0.5</b>"
                 "</div>",
@@ -422,7 +424,7 @@ class TutorialScreen(QWidget):
                 "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
                 "<b>Komi:</b> 3.5 (Trắng)<br>"
                 "<span style='color:#1b1b1b;'>●</span> Đen: 30 quân + 10 đất = 40.0<br>"
-                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "Trắng: 25 quân + 12 đất + 3.5 = 40.5<br><br>"
                 "<b>Trắng thắng 0.5</b>"
                 "</div>",
