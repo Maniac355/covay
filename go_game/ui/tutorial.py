@@ -204,12 +204,12 @@ class TutorialScreen(QWidget):
                 "Luật cơ bản",
                 "<b>1. Bàn cờ:</b> Cờ Vây chơi trên lưới các giao điểm. Kích thước chuẩn là "
                 "9×9 (người mới), 13×13 (trung cấp) và 19×19 (tiêu chuẩn).<br><br>"
-                "<b>2. Quân:</b> Đen đi trước. Hai bên lần lượt đặt một quân mỗi lượt vào "
-                "giao điểm trống.<br><br>"
+                "<b>2. Quân Đen/Trắng:</b> Đen đi trước. Hai bên lần lượt đặt 1 quân mỗi lượt "
+                "vào giao điểm trống; đã đặt thì không di chuyển quân nữa.<br><br>"
                 "<b>3. Khí:</b> Mỗi quân (hoặc nhóm quân liên thông) có các <i>khí</i> — "
-                "các giao điểm trống kề trực tiếp (trên, dưới, trái, phải). Quân ở giữa có 4 khí; "
+                "giao điểm trống kề trực tiếp (trên, dưới, trái, phải). Quân ở giữa có 4 khí; "
                 "ở cạnh có 3; ở góc có 2.<br><br>"
-                "<b>4. Đã đặt thì không di chuyển.</b> Quân chỉ bị lấy khỏi bàn khi bị bắt.",
+                "<b>4. Mục tiêu:</b> Đen và Trắng đều cố gắng kiểm soát nhiều đất hơn đối thủ.",
                 "#78a6d8",
             ),
             _Illustration(
@@ -257,8 +257,8 @@ class TutorialScreen(QWidget):
                 "Bắt quân",
                 "Khi một quân hoặc nhóm quân cùng màu <b>hết khí</b>, "
                 "chúng sẽ bị <b>bắt</b> và lấy khỏi bàn.<br><br>"
-                "Bạn bắt quân đối thủ bằng cách lấp nốt khí cuối cùng của họ. "
-                "Việc bắt diễn ra ngay sau khi bạn đặt quân.<br><br>"
+                "Đen bắt quân Trắng (hoặc ngược lại) bằng cách lấp nốt khí cuối cùng "
+                "của nhóm đối thủ. Việc bắt diễn ra ngay sau khi bạn đặt quân.<br><br>"
                 "<b>Lưu ý:</b> Nếu nước đi của bạn đồng thời làm đối thủ hết khí "
                 "và nhóm của bạn cũng hết khí, quân đối thủ sẽ bị bắt trước, "
                 "từ đó nhóm của bạn có thể được thêm khí. Đây KHÔNG phải tự sát — "
@@ -297,7 +297,7 @@ class TutorialScreen(QWidget):
             _Section(
                 "Luật Ko",
                 "Tình huống <b>ko</b> xảy ra khi một quân bị bắt và đối thủ có thể bắt lại ngay, "
-                "tạo ra vòng lặp vô hạn.<br><br>"
+                "tạo ra vòng lặp vô hạn giữa Đen và Trắng.<br><br>"
                 "<b>Ko đơn giản:</b> Bạn không được bắt lại ngay quân vừa bị bắt. "
                 "Bạn phải đi chỗ khác trước (đòn 'đe doạ ko'), rồi mới có thể bắt lại ở lượt sau.<br><br>"
                 "<b>Siêu Ko theo vị trí:</b> Luật chặt hơn, không cho phép bất kỳ thế cờ nào "
@@ -350,7 +350,7 @@ class TutorialScreen(QWidget):
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Bỏ lượt và kết thúc ván",
-                "Bạn có thể <b>bỏ lượt</b> thay vì đặt quân. "
+                "Đen hoặc Trắng có thể <b>bỏ lượt</b> thay vì đặt quân. "
                 "Khi cả hai bên bỏ lượt liên tiếp, ván sẽ chuyển sang "
                 "<b>Chế độ tính điểm</b>.<br><br>"
                 "Trong chế độ tính điểm, hai bên thống nhất quân nào là 'chết' "
@@ -384,7 +384,8 @@ class TutorialScreen(QWidget):
                 "<td>Trắng nhận komi (bù cho việc đi sau)</td></tr>"
                 "</table><br>"
                 "<b>Komi mặc định:</b> 19×19 → 6.5 · 13×13 → 5.5 · 9×9 → 3.5<br><br>"
-                "Nửa điểm (0.5) của komi giúp tránh hòa.",
+                "Nửa điểm (0.5) của komi giúp tránh hòa. "
+                "Đen và Trắng đều cộng phần điểm của mình theo cách trên.",
                 "#d9b05c",
             ),
             _Illustration(
@@ -412,7 +413,8 @@ class TutorialScreen(QWidget):
                 "<td>Trắng nhận komi</td></tr>"
                 "</table><br>"
                 "Lưu ý: Bắt quân KHÔNG được tính riêng trong luật Trung Quốc, "
-                "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ.",
+                "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ. "
+                "Đen và Trắng đều cộng điểm theo cách này.",
                 "#6aa9e0",
             ),
             _Illustration(
