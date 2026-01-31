@@ -52,12 +52,12 @@ class _Section(QFrame):
         layout.setSpacing(theme.TIGHT_SPACING)
 
         lbl_title = QLabel(title)
-        lbl_title.setFont(theme.font_bold(15))
+        lbl_title.setFont(theme.font_bold(16))
         lbl_title.setStyleSheet(f"color: {accent_color};")
         layout.addWidget(lbl_title)
 
         lbl_body = QLabel(body)
-        lbl_body.setFont(theme.font_normal(12))
+        lbl_body.setFont(theme.font_normal(13))
         lbl_body.setWordWrap(True)
         lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.5;")
         lbl_body.setTextFormat(Qt.TextFormat.RichText)
@@ -86,13 +86,13 @@ class _Illustration(QFrame):
         layout.setSpacing(theme.TIGHT_SPACING)
 
         lbl_title = QLabel(title)
-        lbl_title.setFont(theme.font_bold(12))
+        lbl_title.setFont(theme.font_bold(13))
         lbl_title.setStyleSheet("color: #b8c0cf;")
         layout.addWidget(lbl_title)
 
         lbl_body = QLabel(body)
         lbl_body.setTextFormat(Qt.TextFormat.RichText)
-        lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.5; font-size: 13px;")
+        lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.5; font-size: 14px;")
         lbl_body.setWordWrap(True)
         layout.addWidget(lbl_body)
 
@@ -270,26 +270,27 @@ class TutorialScreen(QWidget):
             _Illustration(
                 "Ví dụ bắt quân",
                 "<div style='color:#c9d1de;'>"
-                "<div style='display:flex; justify-content: space-between; font-weight:600;'>"
+                "<div style='display:flex; justify-content: space-between; font-weight:600; margin-bottom: 6px;'>"
                 "<span>Trước</span><span>Sau khi Đen đi A</span></div>"
-                "<pre style='font-family: Consolas; font-size: 13px; line-height: 1.5; margin: 6px 0 0;'>"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>"
-                "    "
+                "<div style='display:flex; gap: 28px;'>"
+                "<pre style='font-family: Consolas; font-size: 14px; line-height: 1.6; margin: 0;'>"
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>\n"
                 "<span style='color:#111;'>●</span> "
                 "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#a06c2c;'>A</span> <span style='color:#9aa3b2;'>·</span>"
-                "  →  "
+                "<span style='color:#a06c2c;'>A</span> <span style='color:#9aa3b2;'>·</span>\n"
+                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
+                "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>"
+                "</pre>"
+                "<pre style='font-family: Consolas; font-size: 14px; line-height: 1.6; margin: 0;'>"
+                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
+                "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>\n"
                 "<span style='color:#111;'>●</span> <span style='color:#9aa3b2;'>·</span> "
                 "<span style='color:#111;'>●</span> <span style='color:#9aa3b2;'>·</span>\n"
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>"
-                "    "
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>"
                 "</pre>"
+                "</div>"
                 "<div style='margin-top: 6px; font-weight: 600;'>Trắng hết khí nên bị bắt.</div>"
                 "</div>",
             ),
@@ -309,32 +310,33 @@ class TutorialScreen(QWidget):
             _Illustration(
                 "Vòng lặp ko",
                 "<div style='color:#c9d1de;'>"
-                "<div style='display:flex; justify-content: space-between; font-weight:600;'>"
+                "<div style='display:flex; justify-content: space-between; font-weight:600; margin-bottom: 6px;'>"
                 "<span>Trước</span><span>Sau khi Đen bắt</span></div>"
-                "<pre style='font-family: Consolas; font-size: 13px; line-height: 1.5; margin: 6px 0 0;'>"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#9aa3b2;'>·</span>"
-                "    "
+                "<div style='display:flex; gap: 28px;'>"
+                "<pre style='font-family: Consolas; font-size: 14px; line-height: 1.6; margin: 0;'>"
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
                 "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#9aa3b2;'>·</span>\n"
                 "<span style='color:#111;'>●</span> "
                 "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span>"
-                "  →  "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span>\n"
+                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
+                "<span style='color:#9aa3b2;'>·</span>"
+                "</pre>"
+                "<pre style='font-family: Consolas; font-size: 14px; line-height: 1.6; margin: 0;'>"
+                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
+                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
+                "<span style='color:#9aa3b2;'>·</span>\n"
                 "<span style='color:#111;'>●</span> <span style='color:#9aa3b2;'>·</span> "
                 "<span style='color:#111;'>●</span> "
                 "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span>\n"
                 "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
                 "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
                 "<span style='color:#9aa3b2;'>·</span>"
-                "    "
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#9aa3b2;'>·</span>"
                 "</pre>"
+                "</div>"
                 "<div style='margin-top: 6px; font-weight: 600;'>Trắng không được bắt lại ngay.</div>"
                 "</div>",
             ),
