@@ -81,8 +81,8 @@ PANEL_ACCENT = QColor(90, 140, 220)
 # Menu / setup colours
 # ---------------------------------------------------------------------------
 
-MENU_BG_DARK = QColor(245, 247, 252)
-MENU_BG_MID = QColor(232, 237, 246)
+MENU_BG_DARK = QColor(230, 234, 242)
+MENU_BG_MID = QColor(220, 225, 235)
 MENU_ACCENT = QColor(170, 130, 60)        # warm accent
 MENU_ACCENT_HOVER = QColor(190, 150, 80)
 MENU_TEXT = QColor(50, 55, 65)
@@ -90,12 +90,12 @@ MENU_TEXT_DIM = QColor(110, 120, 135)
 MENU_CARD_BG = QColor(255, 255, 255)
 MENU_CARD_BORDER = QColor(210, 218, 230)
 MENU_CARD_SELECTED = QColor(180, 140, 70)
-HEADER_BG = QColor(238, 242, 248)
+HEADER_BG = QColor(225, 230, 240)
 
 # Background gradients
-BACKGROUND_GRADIENT_START = QColor(246, 248, 252)
-BACKGROUND_GRADIENT_MID = QColor(233, 238, 247)
-BACKGROUND_GRADIENT_END = QColor(246, 248, 252)
+BACKGROUND_GRADIENT_START = QColor(230, 234, 242)
+BACKGROUND_GRADIENT_MID = QColor(218, 224, 236)
+BACKGROUND_GRADIENT_END = QColor(230, 234, 242)
 
 # ---------------------------------------------------------------------------
 # Fonts
@@ -143,10 +143,10 @@ def board_gradient(width: float, height: float) -> QLinearGradient:
 
 APP_STYLESHEET = """
 QMainWindow {{
-    background-color: #f4f6fb;
+    background-color: #e3e7f0;
 }}
 QWidget#central {{
-    background-color: #f4f6fb;
+    background-color: #e3e7f0;
 }}
 QLabel {{
     color: #2f3440;
