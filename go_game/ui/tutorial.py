@@ -10,14 +10,13 @@ from __future__ import annotations
 from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QLinearGradient, QPainter
+from PySide6.QtGui import QLinearGradient, QPainter
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
     QPushButton,
     QScrollArea,
-    QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
@@ -44,8 +43,13 @@ class _Section(QFrame):
             "QFrame { background-color: #ffffff; border-radius: 12px; border: 1px solid #e1e6f0; }"
         )
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 16, 20, 16)
-        layout.setSpacing(8)
+        layout.setContentsMargins(
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+        )
+        layout.setSpacing(theme.TIGHT_SPACING)
 
         lbl_title = QLabel(title)
         lbl_title.setFont(theme.font_bold(15))
@@ -61,24 +65,54 @@ class _Section(QFrame):
 
 
 # ---------------------------------------------------------------------------
-# Diagram widget (text-based board illustration)
+# Illustration widgets
 # ---------------------------------------------------------------------------
 
-class _Diagram(QFrame):
-    """A monospaced diagram block."""
+class _Illustration(QFrame):
+    """Visual card with a title and rich-text diagram."""
 
-    def __init__(self, text: str, parent: Optional[QWidget] = None) -> None:
+    def __init__(self, title: str, body: str, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #f3f6fb; border-radius: 10px; border: 1px solid #e1e6f0; }"
+            "QFrame { background-color: #f3f6fb; border-radius: 12px; border: 1px solid #e1e6f0; }"
         )
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(16, 12, 16, 12)
+        layout.setContentsMargins(
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+        )
+        layout.setSpacing(theme.TIGHT_SPACING)
 
-        lbl = QLabel(text)
-        lbl.setFont(theme.font_mono(11))
-        lbl.setStyleSheet("color: #6f7a8a;")
-        layout.addWidget(lbl)
+        lbl_title = QLabel(title)
+        lbl_title.setFont(theme.font_bold(12))
+        lbl_title.setStyleSheet("color: #6a7384;")
+        layout.addWidget(lbl_title)
+
+        lbl_body = QLabel(body)
+        lbl_body.setTextFormat(Qt.TextFormat.RichText)
+        lbl_body.setStyleSheet("color: #596371; line-height: 1.4;")
+        lbl_body.setWordWrap(True)
+        layout.addWidget(lbl_body)
+
+
+class _SectionRow(QWidget):
+    """Row combining a section description and an illustration."""
+
+    def __init__(
+        self,
+        section: _Section,
+        illustration: Optional[QWidget] = None,
+        parent: Optional[QWidget] = None,
+    ) -> None:
+        super().__init__(parent)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(theme.ITEM_SPACING)
+        layout.addWidget(section, stretch=3)
+        if illustration is not None:
+            layout.addWidget(illustration, stretch=2)
 
 
 # ---------------------------------------------------------------------------
@@ -100,10 +134,15 @@ class TutorialScreen(QWidget):
 
         # Header bar
         header = QWidget()
-        header.setFixedHeight(60)
-        header.setStyleSheet("background-color: #eef2f8;")
+        header.setFixedHeight(theme.HEADER_HEIGHT)
+        header.setStyleSheet(f"background-color: {theme.HEADER_BG.name()};")
         h_layout = QHBoxLayout(header)
-        h_layout.setContentsMargins(20, 0, 20, 0)
+        h_layout.setContentsMargins(
+            theme.BASE_PADDING,
+            0,
+            theme.BASE_PADDING,
+            0,
+        )
 
         self._btn_back = QPushButton("Về menu")
         self._btn_back.setStyleSheet(theme.SETUP_BACK_BUTTON)
@@ -132,84 +171,130 @@ class TutorialScreen(QWidget):
         content = QWidget()
         content.setStyleSheet("background: transparent;")
         content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(60, 30, 60, 40)
-        content_layout.setSpacing(20)
+        content_layout.setContentsMargins(*theme.CONTENT_MARGIN)
+        content_layout.setSpacing(theme.SECTION_SPACING)
 
         # -- Sections --
 
-        content_layout.addWidget(_Section(
-            "Cờ Vây là gì?",
-            "Cờ Vây (còn gọi là <b>Weiqi</b> hoặc <b>Baduk</b>) là trò chơi chiến thuật "
-            "dành cho hai người. Trò chơi có nguồn gốc từ Trung Quốc cách đây hơn 4.000 năm "
-            "và là một trong những trò chơi cổ nhất vẫn còn được chơi đến nay.<br><br>"
-            "Mục tiêu rất đơn giản: <b>kiểm soát nhiều đất hơn</b> đối thủ bằng cách "
-            "đặt quân lên các giao điểm của bàn cờ.",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Cờ Vây là gì?",
+                "Cờ Vây (còn gọi là <b>Weiqi</b> hoặc <b>Baduk</b>) là trò chơi chiến thuật "
+                "dành cho hai người. Trò chơi có nguồn gốc từ Trung Quốc cách đây hơn 4.000 năm "
+                "và là một trong những trò chơi cổ nhất vẫn còn được chơi đến nay.<br><br>"
+                "Mục tiêu rất đơn giản: <b>kiểm soát nhiều đất hơn</b> đối thủ bằng cách "
+                "đặt quân lên các giao điểm của bàn cờ.",
+            ),
+            _Illustration(
+                "Ký hiệu quân cờ",
+                "<div style='font-family: \"Segoe UI\"; font-size: 13px;'>"
+                "<b>●</b> Quân Đen &nbsp;&nbsp; "
+                "<b style='color:#c9cdd4;'>●</b> Đánh dấu khí &nbsp;&nbsp; "
+                "<b style='color:#8a93a3;'>·</b> Giao điểm trống<br><br>"
+                "<span style='font-size: 18px; color:#111;'>● ● ● ●</span>"
+                "&nbsp;&nbsp;"
+                "<span style='font-size: 18px; color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○ ○ ○</span>"
+                "</div>",
+            ),
         ))
 
-        content_layout.addWidget(_Section(
-            "Luật cơ bản",
-            "<b>1. Bàn cờ:</b> Cờ Vây chơi trên lưới các giao điểm. Kích thước chuẩn là "
-            "9×9 (người mới), 13×13 (trung cấp) và 19×19 (tiêu chuẩn).<br><br>"
-            "<b>2. Quân:</b> Đen đi trước. Hai bên lần lượt đặt một quân mỗi lượt vào "
-            "giao điểm trống.<br><br>"
-            "<b>3. Khí:</b> Mỗi quân (hoặc nhóm quân liên thông) có các <i>khí</i> — "
-            "các giao điểm trống kề trực tiếp (trên, dưới, trái, phải). Quân ở giữa có 4 khí; "
-            "ở cạnh có 3; ở góc có 2.<br><br>"
-            "<b>4. Đã đặt thì không di chuyển.</b> Quân chỉ bị lấy khỏi bàn khi bị bắt.",
-            "#78a6d8",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Luật cơ bản",
+                "<b>1. Bàn cờ:</b> Cờ Vây chơi trên lưới các giao điểm. Kích thước chuẩn là "
+                "9×9 (người mới), 13×13 (trung cấp) và 19×19 (tiêu chuẩn).<br><br>"
+                "<b>2. Quân:</b> Đen đi trước. Hai bên lần lượt đặt một quân mỗi lượt vào "
+                "giao điểm trống.<br><br>"
+                "<b>3. Khí:</b> Mỗi quân (hoặc nhóm quân liên thông) có các <i>khí</i> — "
+                "các giao điểm trống kề trực tiếp (trên, dưới, trái, phải). Quân ở giữa có 4 khí; "
+                "ở cạnh có 3; ở góc có 2.<br><br>"
+                "<b>4. Đã đặt thì không di chuyển.</b> Quân chỉ bị lấy khỏi bàn khi bị bắt.",
+                "#78a6d8",
+            ),
+            _Illustration(
+                "Ví dụ về khí",
+                "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
+                "· · · · · &nbsp;&nbsp;&nbsp; <span style='color:#7b8393;'>· = ô trống</span><br>"
+                "· · <span style='color:#c2c7d1;'>●</span> · · &nbsp;&nbsp; "
+                "<span style='color:#7b8393;'>● = khí</span><br>"
+                "· <span style='color:#c2c7d1;'>●</span> <span style='color:#1b1b1b;'>●</span> "
+                "<span style='color:#c2c7d1;'>●</span> · &nbsp;&nbsp; "
+                "<span style='color:#7b8393;'>● = quân Đen</span><br>"
+                "· · <span style='color:#c2c7d1;'>●</span> · ·<br>"
+                "· · · · ·<br><br>"
+                "<b>Quân đơn có 4 khí</b>."
+                "</div>",
+            ),
         ))
 
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ về khí:\n\n"
-            "    . . . . .        . = ô trống\n"
-            "    . . L . .        X = quân Đen\n"
-            "    . L X L .        L = khí của X\n"
-            "    . . L . .\n"
-            "    . . . . .\n\n"
-            "  Quân đơn này có 4 khí."
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Bắt quân",
+                "Khi một quân hoặc nhóm quân cùng màu <b>hết khí</b>, "
+                "chúng sẽ bị <b>bắt</b> và lấy khỏi bàn.<br><br>"
+                "Bạn bắt quân đối thủ bằng cách lấp nốt khí cuối cùng của họ. "
+                "Việc bắt diễn ra ngay sau khi bạn đặt quân.<br><br>"
+                "<b>Lưu ý:</b> Nếu nước đi của bạn đồng thời làm đối thủ hết khí "
+                "và nhóm của bạn cũng hết khí, quân đối thủ sẽ bị bắt trước, "
+                "từ đó nhóm của bạn có thể được thêm khí. Đây KHÔNG phải tự sát — "
+                "đó là một nước bắt hợp lệ.",
+                "#e38b6f",
+            ),
+            _Illustration(
+                "Ví dụ bắt quân",
+                "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
+                "<b>Trước</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                "<b>Sau khi Đen đi A</b><br>"
+                "· <span style='color:#1b1b1b;'>●</span> · · &nbsp;&nbsp;&nbsp;&nbsp;"
+                "· <span style='color:#1b1b1b;'>●</span> · ·<br>"
+                "<span style='color:#1b1b1b;'>●</span> "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> "
+                "<span style='color:#a06c2c;'>A</span> · &nbsp;"
+                "→&nbsp;&nbsp;<span style='color:#1b1b1b;'>●</span> · "
+                "<span style='color:#1b1b1b;'>●</span> ·<br>"
+                "· <span style='color:#1b1b1b;'>●</span> · · &nbsp;&nbsp;&nbsp;&nbsp;"
+                "· <span style='color:#1b1b1b;'>●</span> · ·<br><br>"
+                "<span style='color:#7b8393;'>Trắng hết khí nên bị bắt.</span>"
+                "</div>",
+            ),
         ))
 
-        content_layout.addWidget(_Section(
-            "Bắt quân",
-            "Khi một quân hoặc nhóm quân cùng màu <b>hết khí</b>, "
-            "chúng sẽ bị <b>bắt</b> và lấy khỏi bàn.<br><br>"
-            "Bạn bắt quân đối thủ bằng cách lấp nốt khí cuối cùng của họ. "
-            "Việc bắt diễn ra ngay sau khi bạn đặt quân.<br><br>"
-            "<b>Lưu ý:</b> Nếu nước đi của bạn đồng thời làm đối thủ hết khí "
-            "và nhóm của bạn cũng hết khí, quân đối thủ sẽ bị bắt trước, "
-            "từ đó nhóm của bạn có thể được thêm khí. Đây KHÔNG phải tự sát — "
-            "đó là một nước bắt hợp lệ.",
-            "#e38b6f",
-        ))
-
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ bắt quân:\n\n"
-            "    Trước:           Sau khi Đen đi A:\n"
-            "    . X . .          . X . .\n"
-            "    X O A .    →     X . X .\n"
-            "    . X . .          . X . .\n\n"
-            "  O = quân Trắng còn 1 khí tại A.\n"
-            "  Đen đi A → Trắng bị bắt và lấy khỏi bàn."
-        ))
-
-        content_layout.addWidget(_Section(
-            "Luật Ko",
-            "Tình huống <b>ko</b> xảy ra khi một quân bị bắt và đối thủ có thể bắt lại ngay, "
-            "tạo ra vòng lặp vô hạn.<br><br>"
-            "<b>Ko đơn giản:</b> Bạn không được bắt lại ngay quân vừa bị bắt. "
-            "Bạn phải đi chỗ khác trước (đòn 'đe doạ ko'), rồi mới có thể bắt lại ở lượt sau.<br><br>"
-            "<b>Siêu Ko theo vị trí:</b> Luật chặt hơn, không cho phép bất kỳ thế cờ nào "
-            "lặp lại. Luật này xử lý cả những tình huống ko phức tạp.",
-            "#b58ad6",
-        ))
-
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ ko:\n\n"
-            "    . X O .          . X O .\n"
-            "    X O . O    →     X . X O     Đen bắt O\n"
-            "    . X O .          . X O .     tại (1,1)\n\n"
-            "  Trắng KHÔNG được đi ngay vào\n"
-            "  vị trí vừa bị bắt. Phải đi chỗ khác trước."
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Luật Ko",
+                "Tình huống <b>ko</b> xảy ra khi một quân bị bắt và đối thủ có thể bắt lại ngay, "
+                "tạo ra vòng lặp vô hạn.<br><br>"
+                "<b>Ko đơn giản:</b> Bạn không được bắt lại ngay quân vừa bị bắt. "
+                "Bạn phải đi chỗ khác trước (đòn 'đe doạ ko'), rồi mới có thể bắt lại ở lượt sau.<br><br>"
+                "<b>Siêu Ko theo vị trí:</b> Luật chặt hơn, không cho phép bất kỳ thế cờ nào "
+                "lặp lại. Luật này xử lý cả những tình huống ko phức tạp.",
+                "#b58ad6",
+            ),
+            _Illustration(
+                "Vòng lặp ko",
+                "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
+                "<b>Trước</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"
+                "<b>Sau khi Đen bắt</b><br>"
+                "· <span style='color:#1b1b1b;'>●</span> "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> · "
+                "&nbsp;&nbsp;&nbsp;&nbsp;"
+                "· <span style='color:#1b1b1b;'>●</span> "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> ·<br>"
+                "<span style='color:#1b1b1b;'>●</span> "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> · "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> "
+                "&nbsp;&nbsp;→&nbsp;&nbsp;"
+                "<span style='color:#1b1b1b;'>●</span> · "
+                "<span style='color:#1b1b1b;'>●</span> "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span><br>"
+                "· <span style='color:#1b1b1b;'>●</span> "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> · "
+                "&nbsp;&nbsp;&nbsp;&nbsp;"
+                "· <span style='color:#1b1b1b;'>●</span> "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> ·<br><br>"
+                "<span style='color:#7b8393;'>Trắng không được bắt lại ngay.</span>"
+                "</div>",
+            ),
         ))
 
         content_layout.addWidget(_Section(
@@ -221,65 +306,84 @@ class TutorialScreen(QWidget):
             "#e3779a",
         ))
 
-        content_layout.addWidget(_Section(
-            "Bỏ lượt và kết thúc ván",
-            "Bạn có thể <b>bỏ lượt</b> thay vì đặt quân. "
-            "Khi cả hai bên bỏ lượt liên tiếp, ván sẽ chuyển sang "
-            "<b>Chế độ tính điểm</b>.<br><br>"
-            "Trong chế độ tính điểm, hai bên thống nhất quân nào là 'chết' "
-            "(sẽ bị bắt chắc chắn). Nhấn vào nhóm quân để đánh dấu sống/chết, "
-            "sau đó xác nhận để tính điểm cuối.",
-            "#75bfa6",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Bỏ lượt và kết thúc ván",
+                "Bạn có thể <b>bỏ lượt</b> thay vì đặt quân. "
+                "Khi cả hai bên bỏ lượt liên tiếp, ván sẽ chuyển sang "
+                "<b>Chế độ tính điểm</b>.<br><br>"
+                "Trong chế độ tính điểm, hai bên thống nhất quân nào là 'chết' "
+                "(sẽ bị bắt chắc chắn). Nhấn vào nhóm quân để đánh dấu sống/chết, "
+                "sau đó xác nhận để tính điểm cuối.",
+                "#75bfa6",
+            ),
+            _Illustration(
+                "Chuỗi lượt",
+                "<div style='font-family: \"Segoe UI\"; font-size: 12px;'>"
+                "<span style='color:#1b1b1b;'>●</span> Đen đi &nbsp;→&nbsp; "
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> Trắng đi "
+                "&nbsp;→&nbsp; <b>Bỏ lượt</b> × 2<br><br>"
+                "<span style='color:#7b8393;'>Ván chuyển sang tính điểm.</span>"
+                "</div>",
+            ),
         ))
 
-        content_layout.addWidget(_Section(
-            "Tính điểm: Luật Nhật Bản (Tính đất)",
-            "Theo luật Nhật Bản, điểm của bạn gồm:<br><br>"
-            "<table style='color:#566070;'>"
-            "<tr><td style='padding-right:20px;'><b>Đất</b></td>"
-            "<td>Các giao điểm trống được bao quanh <i>chỉ</i> bởi quân của bạn</td></tr>"
-            "<tr><td><b>+ Bắt quân</b></td>"
-            "<td>Số quân đối thủ bị bạn bắt trong ván</td></tr>"
-            "<tr><td><b>+ Quân chết</b></td>"
-            "<td>Quân chết của đối thủ (thống nhất khi tính điểm) được tính như bắt quân</td></tr>"
-            "<tr><td><b>+ Komi</b></td>"
-            "<td>Trắng nhận komi (bù cho việc đi sau)</td></tr>"
-            "</table><br>"
-            "<b>Komi mặc định:</b> 19×19 → 6.5 · 13×13 → 5.5 · 9×9 → 3.5<br><br>"
-            "Nửa điểm (0.5) của komi giúp tránh hòa.",
-            "#d9b05c",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Tính điểm: Luật Nhật Bản (Tính đất)",
+                "Theo luật Nhật Bản, điểm của bạn gồm:<br><br>"
+                "<table style='color:#566070;'>"
+                "<tr><td style='padding-right:20px;'><b>Đất</b></td>"
+                "<td>Các giao điểm trống được bao quanh <i>chỉ</i> bởi quân của bạn</td></tr>"
+                "<tr><td><b>+ Bắt quân</b></td>"
+                "<td>Số quân đối thủ bị bạn bắt trong ván</td></tr>"
+                "<tr><td><b>+ Quân chết</b></td>"
+                "<td>Quân chết của đối thủ (thống nhất khi tính điểm) được tính như bắt quân</td></tr>"
+                "<tr><td><b>+ Komi</b></td>"
+                "<td>Trắng nhận komi (bù cho việc đi sau)</td></tr>"
+                "</table><br>"
+                "<b>Komi mặc định:</b> 19×19 → 6.5 · 13×13 → 5.5 · 9×9 → 3.5<br><br>"
+                "Nửa điểm (0.5) của komi giúp tránh hòa.",
+                "#d9b05c",
+            ),
+            _Illustration(
+                "Ví dụ tính điểm Nhật",
+                "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
+                "<b>Komi:</b> 3.5 (Trắng)<br>"
+                "<span style='color:#1b1b1b;'>●</span> Đen: 20 đất + 4 bắt = 24.0<br>"
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> "
+                "Trắng: 18 đất + 2 bắt + 3.5 = 23.5<br><br>"
+                "<b>Đen thắng 0.5</b>"
+                "</div>",
+            ),
         ))
 
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ tính điểm Nhật (9x9):\n\n"
-            "  Komi = 3.5 (cho Trắng)\n\n"
-            "  Đen: 20 đất + 4 bắt quân      = 24.0\n"
-            "  Trắng: 18 đất + 2 bắt quân + 3.5 = 23.5\n\n"
-            "  → Đen thắng 0.5 điểm"
-        ))
-
-        content_layout.addWidget(_Section(
-            "Tính điểm: Luật Trung Quốc (Tính diện tích)",
-            "Theo luật Trung Quốc, điểm của bạn gồm:<br><br>"
-            "<table style='color:#566070;'>"
-            "<tr><td style='padding-right:20px;'><b>Quân trên bàn</b></td>"
-            "<td>Số quân còn lại của bạn trên bàn</td></tr>"
-            "<tr><td><b>+ Đất</b></td>"
-            "<td>Các giao điểm trống được bao quanh bởi quân của bạn</td></tr>"
-            "<tr><td><b>+ Komi</b></td>"
-            "<td>Trắng nhận komi</td></tr>"
-            "</table><br>"
-            "Lưu ý: Bắt quân KHÔNG được tính riêng trong luật Trung Quốc, "
-            "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ.",
-            "#6aa9e0",
-        ))
-
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ tính điểm Trung Quốc (9x9):\n\n"
-            "  Komi = 3.5 (cho Trắng)\n\n"
-            "  Đen: 30 quân + 10 đất      = 40.0\n"
-            "  Trắng: 25 quân + 12 đất + 3.5 = 40.5\n\n"
-            "  → Trắng thắng 0.5 điểm"
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Tính điểm: Luật Trung Quốc (Tính diện tích)",
+                "Theo luật Trung Quốc, điểm của bạn gồm:<br><br>"
+                "<table style='color:#566070;'>"
+                "<tr><td style='padding-right:20px;'><b>Quân trên bàn</b></td>"
+                "<td>Số quân còn lại của bạn trên bàn</td></tr>"
+                "<tr><td><b>+ Đất</b></td>"
+                "<td>Các giao điểm trống được bao quanh bởi quân của bạn</td></tr>"
+                "<tr><td><b>+ Komi</b></td>"
+                "<td>Trắng nhận komi</td></tr>"
+                "</table><br>"
+                "Lưu ý: Bắt quân KHÔNG được tính riêng trong luật Trung Quốc, "
+                "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ.",
+                "#6aa9e0",
+            ),
+            _Illustration(
+                "Ví dụ tính điểm Trung Quốc",
+                "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
+                "<b>Komi:</b> 3.5 (Trắng)<br>"
+                "<span style='color:#1b1b1b;'>●</span> Đen: 30 quân + 10 đất = 40.0<br>"
+                "<span style='color:#f5f5f5; text-shadow: 0 0 1px #6f7786;'>○</span> "
+                "Trắng: 25 quân + 12 đất + 3.5 = 40.5<br><br>"
+                "<b>Trắng thắng 0.5</b>"
+                "</div>",
+            ),
         ))
 
         content_layout.addWidget(_Section(
@@ -305,7 +409,7 @@ class TutorialScreen(QWidget):
             "#7fbfa1",
         ))
 
-        content_layout.addSpacing(30)
+        content_layout.addSpacing(theme.SECTION_SPACING)
 
         scroll.setWidget(content)
         outer.addWidget(scroll)
@@ -316,7 +420,7 @@ class TutorialScreen(QWidget):
         p = QPainter(self)
         w, h = self.width(), self.height()
         grad = QLinearGradient(0, 0, w, h)
-        grad.setColorAt(0.0, QColor(246, 248, 252))
-        grad.setColorAt(1.0, QColor(235, 239, 247))
+        grad.setColorAt(0.0, theme.BACKGROUND_GRADIENT_START)
+        grad.setColorAt(1.0, theme.BACKGROUND_GRADIENT_MID)
         p.fillRect(self.rect(), grad)
         p.end()

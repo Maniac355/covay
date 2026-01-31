@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Optional
 
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QLinearGradient, QPainter
+from PySide6.QtGui import QLinearGradient, QPainter
 from PySide6.QtWidgets import (
     QFileDialog,
     QGroupBox,
@@ -77,8 +77,13 @@ class GameScreen(QWidget):
 
     def _build_ui(self) -> None:
         root = QHBoxLayout(self)
-        root.setContentsMargins(10, 10, 10, 10)
-        root.setSpacing(10)
+        root.setContentsMargins(
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+        )
+        root.setSpacing(theme.BASE_PADDING)
 
         # Left: Board
         self._board_widget = BoardWidget()
@@ -91,7 +96,7 @@ class GameScreen(QWidget):
 
         # Right: info panel
         right = QVBoxLayout()
-        right.setSpacing(8)
+        right.setSpacing(theme.TIGHT_SPACING)
 
         # -- Back to menu button (top) --
         self._btn_menu = QPushButton("Menu chính")
@@ -100,7 +105,7 @@ class GameScreen(QWidget):
         self._btn_menu.clicked.connect(self._on_back_to_menu)
         right.addWidget(self._btn_menu)
 
-        right.addSpacing(4)
+        right.addSpacing(theme.TIGHT_SPACING)
 
         # -- Turn / status --
         self._lbl_turn = QLabel("Đen đi trước")
@@ -111,6 +116,13 @@ class GameScreen(QWidget):
         # -- Info group --
         info_group = QGroupBox("Thông tin ván")
         info_layout = QVBoxLayout(info_group)
+        info_layout.setContentsMargins(
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+        )
+        info_layout.setSpacing(theme.GROUPBOX_SPACING)
         self._lbl_captures_b = QLabel("Đen bắt: 0")
         self._lbl_captures_w = QLabel("Trắng bắt: 0")
         self._lbl_komi = QLabel("Komi: 6.5")
@@ -130,6 +142,13 @@ class GameScreen(QWidget):
         # -- History list --
         history_group = QGroupBox("Lịch sử nước đi")
         history_layout = QVBoxLayout(history_group)
+        history_layout.setContentsMargins(
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+        )
+        history_layout.setSpacing(theme.GROUPBOX_SPACING)
         self._move_list = QListWidget()
         self._move_list.setFont(theme.font_mono(10))
         history_layout.addWidget(self._move_list)
@@ -138,6 +157,13 @@ class GameScreen(QWidget):
         # -- Toolbar buttons --
         btn_group = QGroupBox("Thao tác")
         btn_layout = QVBoxLayout(btn_group)
+        btn_layout.setContentsMargins(
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+            theme.GROUPBOX_MARGIN,
+        )
+        btn_layout.setSpacing(theme.GROUPBOX_SPACING)
 
         row1 = QHBoxLayout()
         self._btn_new = QPushButton("Ván mới")
@@ -167,10 +193,7 @@ class GameScreen(QWidget):
         # Scoring mode buttons (hidden until scoring phase)
         self._btn_confirm_score = QPushButton("Xác nhận điểm")
         self._btn_confirm_score.setVisible(False)
-        self._btn_confirm_score.setStyleSheet(
-            "QPushButton { background-color: #e9d7b5; color: #503a1f; font-weight: bold; }"
-            "QPushButton:hover { background-color: #f2e3c9; }"
-        )
+        self._btn_confirm_score.setStyleSheet(theme.SETUP_START_BUTTON)
         self._btn_resume_play = QPushButton("Tiếp tục chơi")
         self._btn_resume_play.setVisible(False)
         row4 = QHBoxLayout()
@@ -372,7 +395,7 @@ class GameScreen(QWidget):
         p = QPainter(self)
         w, h = self.width(), self.height()
         grad = QLinearGradient(0, 0, 0, h)
-        grad.setColorAt(0.0, QColor(246, 248, 252))
-        grad.setColorAt(1.0, QColor(235, 239, 247))
+        grad.setColorAt(0.0, theme.BACKGROUND_GRADIENT_START)
+        grad.setColorAt(1.0, theme.BACKGROUND_GRADIENT_MID)
         p.fillRect(self.rect(), grad)
         p.end()

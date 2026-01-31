@@ -12,6 +12,21 @@ from PySide6.QtGui import QColor, QFont, QLinearGradient
 
 
 # ---------------------------------------------------------------------------
+# Spacing / layout
+# ---------------------------------------------------------------------------
+
+BASE_PADDING = 16
+SECTION_SPACING = 24
+ITEM_SPACING = 16
+GROUPBOX_MARGIN = 12
+GROUPBOX_SPACING = 8
+TIGHT_SPACING = 8
+
+PAGE_MARGIN = (40, 30, 40, 30)
+CONTENT_MARGIN = (60, 30, 60, 40)
+HEADER_HEIGHT = 60
+
+# ---------------------------------------------------------------------------
 # Board colours
 # ---------------------------------------------------------------------------
 
@@ -75,6 +90,12 @@ MENU_TEXT_DIM = QColor(110, 120, 135)
 MENU_CARD_BG = QColor(255, 255, 255)
 MENU_CARD_BORDER = QColor(210, 218, 230)
 MENU_CARD_SELECTED = QColor(180, 140, 70)
+HEADER_BG = QColor(238, 242, 248)
+
+# Background gradients
+BACKGROUND_GRADIENT_START = QColor(246, 248, 252)
+BACKGROUND_GRADIENT_MID = QColor(233, 238, 247)
+BACKGROUND_GRADIENT_END = QColor(246, 248, 252)
 
 # ---------------------------------------------------------------------------
 # Fonts
@@ -120,7 +141,7 @@ def board_gradient(width: float, height: float) -> QLinearGradient:
 # Style sheet for the application
 # ---------------------------------------------------------------------------
 
-APP_STYLESHEET = """
+APP_STYLESHEET = f"""
 QMainWindow {
     background-color: #f4f6fb;
 }
@@ -170,8 +191,8 @@ QGroupBox {
     color: #2f3440;
     border: 1px solid #d6dbe6;
     border-radius: 14px;
-    margin-top: 8px;
-    padding-top: 12px;
+    margin-top: {TIGHT_SPACING}px;
+    padding-top: {GROUPBOX_MARGIN}px;
     font-family: "Segoe UI";
     font-size: 12px;
     font-weight: bold;

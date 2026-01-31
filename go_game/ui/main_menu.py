@@ -72,7 +72,7 @@ class MainMenuScreen(QWidget):
         # Centre column
         center = QVBoxLayout()
         center.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        center.setSpacing(18)
+        center.setSpacing(theme.SECTION_SPACING)
 
         # Buttons
         self._btn_new = QPushButton("Ván mới")
@@ -112,9 +112,9 @@ class MainMenuScreen(QWidget):
 
         # Background gradient
         grad = QLinearGradient(0, 0, w, h)
-        grad.setColorAt(0.0, QColor(246, 248, 252))
-        grad.setColorAt(0.5, QColor(233, 238, 247))
-        grad.setColorAt(1.0, QColor(246, 248, 252))
+        grad.setColorAt(0.0, theme.BACKGROUND_GRADIENT_START)
+        grad.setColorAt(0.5, theme.BACKGROUND_GRADIENT_MID)
+        grad.setColorAt(1.0, theme.BACKGROUND_GRADIENT_END)
         p.fillRect(self.rect(), grad)
 
         # Decorative grid lines (subtle)

@@ -10,7 +10,7 @@ from __future__ import annotations
 from typing import Optional
 
 from PySide6.QtCore import QRectF, Qt, Signal
-from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPen
+from PySide6.QtGui import QLinearGradient, QPainter
 from PySide6.QtWidgets import (
     QCheckBox,
     QComboBox,
@@ -58,8 +58,13 @@ class _SelectCard(QFrame):
 
     def _build_ui(self) -> None:
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(14, 14, 14, 14)
-        layout.setSpacing(6)
+        layout.setContentsMargins(
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+        )
+        layout.setSpacing(theme.TIGHT_SPACING)
 
         if self._icon:
             lbl_icon = QLabel(self._icon)
@@ -152,7 +157,7 @@ class GameSetupScreen(QWidget):
 
     def _build_ui(self) -> None:
         outer = QVBoxLayout(self)
-        outer.setContentsMargins(40, 30, 40, 30)
+        outer.setContentsMargins(*theme.PAGE_MARGIN)
         outer.setSpacing(0)
 
         # Header
@@ -175,17 +180,17 @@ class GameSetupScreen(QWidget):
         header.addWidget(spacer_btn)
         outer.addLayout(header)
 
-        outer.addSpacing(24)
+        outer.addSpacing(theme.SECTION_SPACING)
 
         # -- Board size section --
         lbl_size = QLabel("Kích thước bàn cờ")
         lbl_size.setFont(theme.font_bold(15))
         lbl_size.setStyleSheet("color: #3a3f49;")
         outer.addWidget(lbl_size)
-        outer.addSpacing(10)
+        outer.addSpacing(theme.TIGHT_SPACING)
 
         size_row = QHBoxLayout()
-        size_row.setSpacing(16)
+        size_row.setSpacing(theme.ITEM_SPACING)
 
         size_row.addStretch()
         card_9 = _SelectCard("9 × 9", "Ván nhanh\n~15 phút", "9")
@@ -200,17 +205,17 @@ class GameSetupScreen(QWidget):
         size_row.addStretch()
         outer.addLayout(size_row)
 
-        outer.addSpacing(24)
+        outer.addSpacing(theme.SECTION_SPACING)
 
         # -- Ruleset section --
         lbl_rules = QLabel("Luật chơi")
         lbl_rules.setFont(theme.font_bold(15))
         lbl_rules.setStyleSheet("color: #3a3f49;")
         outer.addWidget(lbl_rules)
-        outer.addSpacing(10)
+        outer.addSpacing(theme.TIGHT_SPACING)
 
         rule_row = QHBoxLayout()
-        rule_row.setSpacing(16)
+        rule_row.setSpacing(theme.ITEM_SPACING)
 
         rule_row.addStretch()
         card_jp = _SelectCard(
@@ -231,11 +236,11 @@ class GameSetupScreen(QWidget):
         rule_row.addStretch()
         outer.addLayout(rule_row)
 
-        outer.addSpacing(24)
+        outer.addSpacing(theme.SECTION_SPACING)
 
         # -- Komi & advanced --
         detail_row = QHBoxLayout()
-        detail_row.setSpacing(30)
+        detail_row.setSpacing(theme.SECTION_SPACING)
 
         # Komi
         komi_col = QVBoxLayout()
@@ -317,7 +322,7 @@ class GameSetupScreen(QWidget):
         p = QPainter(self)
         w, h = self.width(), self.height()
         grad = QLinearGradient(0, 0, w, h)
-        grad.setColorAt(0.0, QColor(246, 248, 252))
-        grad.setColorAt(1.0, QColor(233, 238, 247))
+        grad.setColorAt(0.0, theme.BACKGROUND_GRADIENT_START)
+        grad.setColorAt(1.0, theme.BACKGROUND_GRADIENT_MID)
         p.fillRect(self.rect(), grad)
         p.end()
