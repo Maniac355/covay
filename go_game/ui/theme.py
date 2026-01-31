@@ -141,20 +141,20 @@ def board_gradient(width: float, height: float) -> QLinearGradient:
 # Style sheet for the application
 # ---------------------------------------------------------------------------
 
-APP_STYLESHEET = f"""
-QMainWindow {
+APP_STYLESHEET = """
+QMainWindow {{
     background-color: #f4f6fb;
-}
-QWidget#central {
+}}
+QWidget#central {{
     background-color: #f4f6fb;
-}
-QLabel {
+}}
+QLabel {{
     color: #2f3440;
     font-family: "Segoe UI";
     font-size: 12px;
     background: transparent;
-}
-QPushButton {
+}}
+QPushButton {{
     background-color: #ffffff;
     color: #2f3440;
     border: 1px solid #d6dbe6;
@@ -163,31 +163,31 @@ QPushButton {
     font-family: "Segoe UI";
     font-size: 12px;
     min-width: 70px;
-}
-QPushButton:hover {
+}}
+QPushButton:hover {{
     background-color: #eef1f8;
     border-color: #bfc8d8;
-}
-QPushButton:pressed {
+}}
+QPushButton:pressed {{
     background-color: #e2e7f1;
-}
-QPushButton:disabled {
+}}
+QPushButton:disabled {{
     background-color: #f1f3f8;
     color: #9aa3b2;
     border-color: #e0e4ee;
-}
-QListWidget {
+}}
+QListWidget {{
     background-color: #ffffff;
     color: #2f3440;
     border: 1px solid #d6dbe6;
     border-radius: 12px;
     font-family: "Consolas";
     font-size: 11px;
-}
-QListWidget::item:selected {
+}}
+QListWidget::item:selected {{
     background-color: #e4ecfb;
-}
-QGroupBox {
+}}
+QGroupBox {{
     color: #2f3440;
     border: 1px solid #d6dbe6;
     border-radius: 14px;
@@ -196,13 +196,13 @@ QGroupBox {
     font-family: "Segoe UI";
     font-size: 12px;
     font-weight: bold;
-}
-QGroupBox::title {
+}}
+QGroupBox::title {{
     subcontrol-origin: margin;
     left: 10px;
     padding: 0 4px;
-}
-QComboBox, QSpinBox, QDoubleSpinBox {
+}}
+QComboBox, QSpinBox, QDoubleSpinBox {{
     background-color: #ffffff;
     color: #2f3440;
     border: 1px solid #d6dbe6;
@@ -210,51 +210,54 @@ QComboBox, QSpinBox, QDoubleSpinBox {
     padding: 4px 8px;
     font-family: "Segoe UI";
     font-size: 12px;
-}
-QComboBox:hover, QSpinBox:hover, QDoubleSpinBox:hover {
+}}
+QComboBox:hover, QSpinBox:hover, QDoubleSpinBox:hover {{
     border-color: #bfc8d8;
-}
-QComboBox QAbstractItemView {
+}}
+QComboBox QAbstractItemView {{
     background-color: #ffffff;
     color: #2f3440;
     selection-background-color: #e4ecfb;
     border: 1px solid #d6dbe6;
-}
-QCheckBox {
+}}
+QCheckBox {{
     color: #2f3440;
     font-family: "Segoe UI";
     font-size: 12px;
     spacing: 6px;
-}
-QDialog {
+}}
+QDialog {{
     background-color: #f8f9fc;
-}
-QStatusBar {
+}}
+QStatusBar {{
     background-color: #eef1f7;
     color: #6b7485;
     font-size: 11px;
-}
-QScrollArea {
+}}
+QScrollArea {{
     border: none;
     background: transparent;
-}
-QScrollBar:vertical {
+}}
+QScrollBar:vertical {{
     background: #edf0f6;
     width: 10px;
     border-radius: 6px;
-}
-QScrollBar::handle:vertical {
+}}
+QScrollBar::handle:vertical {{
     background: #c9d2e2;
     border-radius: 6px;
     min-height: 30px;
-}
-QScrollBar::handle:vertical:hover {
+}}
+QScrollBar::handle:vertical:hover {{
     background: #b7c1d4;
-}
-QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+}}
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {{
     height: 0px;
-}
-"""
+}}
+""".format(
+    TIGHT_SPACING=TIGHT_SPACING,
+    GROUPBOX_MARGIN=GROUPBOX_MARGIN,
+)
 
 # ---------------------------------------------------------------------------
 # Menu-specific button styles
