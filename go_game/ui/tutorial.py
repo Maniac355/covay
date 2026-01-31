@@ -40,7 +40,7 @@ class _Section(QFrame):
     ) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #ffffff; border-radius: 12px; border: 1px solid #e1e6f0; }"
+            "QFrame { background-color: #242a36; border-radius: 12px; border: 1px solid #3d4554; }"
         )
         layout = QVBoxLayout(self)
         layout.setContentsMargins(
@@ -59,7 +59,7 @@ class _Section(QFrame):
         lbl_body = QLabel(body)
         lbl_body.setFont(theme.font_normal(12))
         lbl_body.setWordWrap(True)
-        lbl_body.setStyleSheet("color: #566070; line-height: 1.5;")
+        lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.5;")
         lbl_body.setTextFormat(Qt.TextFormat.RichText)
         layout.addWidget(lbl_body)
 
@@ -74,7 +74,7 @@ class _Illustration(QFrame):
     def __init__(self, title: str, body: str, parent: Optional[QWidget] = None) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #e6ebf3; border-radius: 12px; border: 1px solid #d2d8e5; }"
+            "QFrame { background-color: #2a303c; border-radius: 12px; border: 1px solid #3d4554; }"
         )
         layout = QVBoxLayout(self)
         layout.setContentsMargins(
@@ -87,12 +87,12 @@ class _Illustration(QFrame):
 
         lbl_title = QLabel(title)
         lbl_title.setFont(theme.font_bold(12))
-        lbl_title.setStyleSheet("color: #6a7384;")
+        lbl_title.setStyleSheet("color: #b8c0cf;")
         layout.addWidget(lbl_title)
 
         lbl_body = QLabel(body)
         lbl_body.setTextFormat(Qt.TextFormat.RichText)
-        lbl_body.setStyleSheet("color: #596371; line-height: 1.5; font-size: 13px;")
+        lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.5; font-size: 13px;")
         lbl_body.setWordWrap(True)
         layout.addWidget(lbl_body)
 
@@ -187,7 +187,7 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ký hiệu quân cờ",
-                "<div style='font-family: \"Segoe UI\"; font-size: 14px; color:#4f5866;'>"
+                "<div style='font-family: \"Segoe UI\"; font-size: 14px; color:#c9d1de;'>"
                 "<b style='color:#111;'>●</b> Quân Đen &nbsp;&nbsp; "
                 "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; "
                 "border: 1px solid #6b7485; border-radius: 50%; padding: 1px 3px;'>○</span> "
@@ -216,7 +216,7 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ví dụ về khí",
-                "<div style='color:#586173;'>"
+                "<div style='color:#c9d1de;'>"
                 "<pre style='font-family: Consolas; font-size: 13px; line-height: 1.5; margin: 0;'>"
                 "<span style='color:#9aa3b2;'>·</span> "
                 "<span style='color:#9aa3b2;'>·</span> "
@@ -269,7 +269,7 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ví dụ bắt quân",
-                "<div style='color:#586173;'>"
+                "<div style='color:#c9d1de;'>"
                 "<div style='display:flex; justify-content: space-between; font-weight:600;'>"
                 "<span>Trước</span><span>Sau khi Đen đi A</span></div>"
                 "<pre style='font-family: Consolas; font-size: 13px; line-height: 1.5; margin: 6px 0 0;'>"
@@ -308,7 +308,7 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Vòng lặp ko",
-                "<div style='color:#586173;'>"
+                "<div style='color:#c9d1de;'>"
                 "<div style='display:flex; justify-content: space-between; font-weight:600;'>"
                 "<span>Trước</span><span>Sau khi Đen bắt</span></div>"
                 "<pre style='font-family: Consolas; font-size: 13px; line-height: 1.5; margin: 6px 0 0;'>"
@@ -375,7 +375,7 @@ class TutorialScreen(QWidget):
             _Section(
                 "Tính điểm: Luật Nhật Bản (Tính đất)",
                 "Theo luật Nhật Bản, điểm của bạn gồm:<br><br>"
-                "<table style='color:#566070;'>"
+                "<table style='color:#c9d1de;'>"
                 "<tr><td style='padding-right:20px;'><b>Đất</b></td>"
                 "<td>Các giao điểm trống được bao quanh <i>chỉ</i> bởi quân của bạn</td></tr>"
                 "<tr><td><b>+ Bắt quân</b></td>"
@@ -406,7 +406,7 @@ class TutorialScreen(QWidget):
             _Section(
                 "Tính điểm: Luật Trung Quốc (Tính diện tích)",
                 "Theo luật Trung Quốc, điểm của bạn gồm:<br><br>"
-                "<table style='color:#566070;'>"
+                "<table style='color:#c9d1de;'>"
                 "<tr><td style='padding-right:20px;'><b>Quân trên bàn</b></td>"
                 "<td>Số quân còn lại của bạn trên bàn</td></tr>"
                 "<tr><td><b>+ Đất</b></td>"

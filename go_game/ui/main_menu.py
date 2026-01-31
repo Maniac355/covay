@@ -118,7 +118,7 @@ class MainMenuScreen(QWidget):
         p.fillRect(self.rect(), grad)
 
         # Decorative grid lines (subtle)
-        p.setPen(QPen(QColor(120, 130, 150, 25), 1))
+        p.setPen(QPen(QColor(255, 255, 255, 18), 1))
         spacing = 40
         for i in range(0, max(w, h) + spacing, spacing):
             if i < w:
@@ -159,7 +159,7 @@ class MainMenuScreen(QWidget):
         # Version / footer
         footer_font = theme.font_normal(10)
         p.setFont(footer_font)
-        p.setPen(QPen(QColor(120, 130, 145)))
+        p.setPen(QPen(theme.MENU_TEXT_DIM))
         footer_rect = QRectF(0, h - 30, w, 20)
         p.drawText(footer_rect, Qt.AlignmentFlag.AlignCenter, "Cờ Vây  ·  Weiqi  ·  Baduk")
 

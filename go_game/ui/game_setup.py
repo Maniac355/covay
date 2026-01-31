@@ -70,20 +70,20 @@ class _SelectCard(QFrame):
             lbl_icon = QLabel(self._icon)
             lbl_icon.setFont(theme.font_bold(28))
             lbl_icon.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            lbl_icon.setStyleSheet("color: #b98f4f;")
+            lbl_icon.setStyleSheet("color: #d6b072;")
             layout.addWidget(lbl_icon)
 
         lbl_title = QLabel(self._title)
         lbl_title.setFont(theme.font_bold(14))
         lbl_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        lbl_title.setStyleSheet("color: #3a3f49;")
+        lbl_title.setStyleSheet("color: #e4e8f1;")
         layout.addWidget(lbl_title)
 
         lbl_desc = QLabel(self._desc)
         lbl_desc.setFont(theme.font_normal(10))
         lbl_desc.setAlignment(Qt.AlignmentFlag.AlignCenter)
         lbl_desc.setWordWrap(True)
-        lbl_desc.setStyleSheet("color: #7a828f;")
+        lbl_desc.setStyleSheet("color: #b6becd;")
         layout.addWidget(lbl_desc)
 
         layout.addStretch()
@@ -170,7 +170,7 @@ class GameSetupScreen(QWidget):
         header.addStretch()
         lbl_title = QLabel("Ván mới")
         lbl_title.setFont(theme.font_bold(22))
-        lbl_title.setStyleSheet("color: #b98f4f;")
+        lbl_title.setStyleSheet("color: #d6b072;")
         header.addWidget(lbl_title)
         header.addStretch()
         # Invisible spacer to balance the back button
@@ -185,7 +185,7 @@ class GameSetupScreen(QWidget):
         # -- Board size section --
         lbl_size = QLabel("Kích thước bàn cờ")
         lbl_size.setFont(theme.font_bold(15))
-        lbl_size.setStyleSheet("color: #3a3f49;")
+        lbl_size.setStyleSheet("color: #e4e8f1;")
         outer.addWidget(lbl_size)
         outer.addSpacing(theme.TIGHT_SPACING)
 
@@ -210,7 +210,7 @@ class GameSetupScreen(QWidget):
         # -- Ruleset section --
         lbl_rules = QLabel("Luật chơi")
         lbl_rules.setFont(theme.font_bold(15))
-        lbl_rules.setStyleSheet("color: #3a3f49;")
+        lbl_rules.setStyleSheet("color: #e4e8f1;")
         outer.addWidget(lbl_rules)
         outer.addSpacing(theme.TIGHT_SPACING)
 
@@ -246,7 +246,7 @@ class GameSetupScreen(QWidget):
         komi_col = QVBoxLayout()
         lbl_komi = QLabel("Komi (bù điểm cho Trắng)")
         lbl_komi.setFont(theme.font_bold(12))
-        lbl_komi.setStyleSheet("color: #6f7786;")
+        lbl_komi.setStyleSheet("color: #b6becd;")
         komi_col.addWidget(lbl_komi)
         self._komi_spin = QDoubleSpinBox()
         self._komi_spin.setRange(0.0, 99.5)
@@ -261,7 +261,7 @@ class GameSetupScreen(QWidget):
         ko_col = QVBoxLayout()
         lbl_ko = QLabel("Luật Ko")
         lbl_ko.setFont(theme.font_bold(12))
-        lbl_ko.setStyleSheet("color: #6f7786;")
+        lbl_ko.setStyleSheet("color: #b6becd;")
         ko_col.addWidget(lbl_ko)
         self._ko_combo = QComboBox()
         self._ko_combo.addItems(["Ko đơn giản", "Siêu Ko theo vị trí"])
@@ -273,7 +273,7 @@ class GameSetupScreen(QWidget):
         suicide_col = QVBoxLayout()
         lbl_sui = QLabel("Nâng cao")
         lbl_sui.setFont(theme.font_bold(12))
-        lbl_sui.setStyleSheet("color: #6f7786;")
+        lbl_sui.setStyleSheet("color: #b6becd;")
         suicide_col.addWidget(lbl_sui)
         self._suicide_check = QCheckBox("Cho phép nước đi tự sát")
         suicide_col.addWidget(self._suicide_check)
