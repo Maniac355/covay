@@ -9,15 +9,15 @@ from __future__ import annotations
 
 from typing import Optional
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QColor, QLinearGradient, QPainter
+from PySide6.QtCore import Qt, Signal, QUrl
+from PySide6.QtGui import QLinearGradient, QPainter, QPixmap
+from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
     QLabel,
     QPushButton,
     QScrollArea,
-    QSizePolicy,
     QVBoxLayout,
     QWidget,
 )
@@ -41,44 +41,149 @@ class _Section(QFrame):
     ) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #ffffff; border-radius: 12px; border: 1px solid #e1e6f0; }"
+            "QFrame { background-color: #242a36; border-radius: 12px; border: 1px solid #3d4554; }"
         )
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(20, 16, 20, 16)
-        layout.setSpacing(8)
+        layout.setContentsMargins(
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+        )
+        layout.setSpacing(theme.TIGHT_SPACING)
 
         lbl_title = QLabel(title)
-        lbl_title.setFont(theme.font_bold(15))
+        lbl_title.setFont(theme.font_bold(16))
         lbl_title.setStyleSheet(f"color: {accent_color};")
         layout.addWidget(lbl_title)
 
         lbl_body = QLabel(body)
-        lbl_body.setFont(theme.font_normal(12))
+        lbl_body.setFont(theme.font_normal(13))
         lbl_body.setWordWrap(True)
-        lbl_body.setStyleSheet("color: #566070; line-height: 1.5;")
+        lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.5;")
         lbl_body.setTextFormat(Qt.TextFormat.RichText)
         layout.addWidget(lbl_body)
 
 
 # ---------------------------------------------------------------------------
-# Diagram widget (text-based board illustration)
+# Illustration widgets
 # ---------------------------------------------------------------------------
 
-class _Diagram(QFrame):
-    """A monospaced diagram block."""
+class _RemoteImage(QLabel):
+    """Loads a remote image and scales it to fit the card width."""
 
-    def __init__(self, text: str, parent: Optional[QWidget] = None) -> None:
+    def __init__(
+        self,
+        image_url: str,
+        alt_text: str,
+        parent: Optional[QWidget] = None,
+    ) -> None:
+        super().__init__(parent)
+        self._image_url = image_url
+        self._alt_text = alt_text
+        self._pixmap: Optional[QPixmap] = None
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setMinimumHeight(160)
+        self.setWordWrap(True)
+        self.setStyleSheet(
+            "QLabel { background-color: #1f2430; border-radius: 8px; padding: 6px; }"
+            "QLabel { color: #9aa3b2; font-size: 12px; }"
+        )
+        self.setText(f"{alt_text}\n(đang tải hình...)")
+
+        self._network = QNetworkAccessManager(self)
+        request = QNetworkRequest(QUrl(self._image_url))
+        request.setRawHeader(b"User-Agent", b"Covay-Go-Guide/1.0")
+        reply = self._network.get(request)
+        reply.finished.connect(lambda: self._handle_reply(reply))
+
+    def _handle_reply(self, reply) -> None:
+        if reply.error():
+            self.setText(f"{self._alt_text}\n(Không tải được hình.)")
+            reply.deleteLater()
+            return
+
+        data = reply.readAll()
+        pixmap = QPixmap()
+        if not pixmap.loadFromData(data):
+            self.setText(f"{self._alt_text}\n(Không đọc được hình.)")
+            reply.deleteLater()
+            return
+
+        self._pixmap = pixmap
+        self._update_scaled_pixmap()
+        reply.deleteLater()
+
+    def _update_scaled_pixmap(self) -> None:
+        if not self._pixmap:
+            return
+        target_width = max(1, self.width() - 12)
+        scaled = self._pixmap.scaledToWidth(
+            target_width,
+            Qt.TransformationMode.SmoothTransformation,
+        )
+        self.setPixmap(scaled)
+
+    def resizeEvent(self, event) -> None:  # type: ignore[override]
+        super().resizeEvent(event)
+        if self._pixmap:
+            self._update_scaled_pixmap()
+
+
+class _Illustration(QFrame):
+    """Visual card with a title, remote image, and caption."""
+
+    def __init__(
+        self,
+        title: str,
+        image_url: str,
+        caption: str,
+        parent: Optional[QWidget] = None,
+    ) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #f3f6fb; border-radius: 10px; border: 1px solid #e1e6f0; }"
+            "QFrame { background-color: #2a303c; border-radius: 12px; border: 1px solid #3d4554; }"
         )
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(16, 12, 16, 12)
+        layout.setContentsMargins(
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+            theme.BASE_PADDING,
+        )
+        layout.setSpacing(theme.TIGHT_SPACING)
 
-        lbl = QLabel(text)
-        lbl.setFont(theme.font_mono(11))
-        lbl.setStyleSheet("color: #6f7a8a;")
-        layout.addWidget(lbl)
+        lbl_title = QLabel(title)
+        lbl_title.setFont(theme.font_bold(13))
+        lbl_title.setStyleSheet("color: #b8c0cf;")
+        layout.addWidget(lbl_title)
+
+        img = _RemoteImage(image_url, title)
+        layout.addWidget(img)
+
+        lbl_caption = QLabel(caption)
+        lbl_caption.setTextFormat(Qt.TextFormat.RichText)
+        lbl_caption.setStyleSheet("color: #c9d1de; line-height: 1.5; font-size: 13px;")
+        lbl_caption.setWordWrap(True)
+        layout.addWidget(lbl_caption)
+
+
+class _SectionRow(QWidget):
+    """Row combining a section description and an illustration."""
+
+    def __init__(
+        self,
+        section: _Section,
+        illustration: Optional[QWidget] = None,
+        parent: Optional[QWidget] = None,
+    ) -> None:
+        super().__init__(parent)
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(theme.ITEM_SPACING)
+        layout.addWidget(section, stretch=3)
+        if illustration is not None:
+            layout.addWidget(illustration, stretch=2)
 
 
 # ---------------------------------------------------------------------------
@@ -100,10 +205,15 @@ class TutorialScreen(QWidget):
 
         # Header bar
         header = QWidget()
-        header.setFixedHeight(60)
-        header.setStyleSheet("background-color: #eef2f8;")
+        header.setFixedHeight(theme.HEADER_HEIGHT)
+        header.setStyleSheet(f"background-color: {theme.HEADER_BG.name()};")
         h_layout = QHBoxLayout(header)
-        h_layout.setContentsMargins(20, 0, 20, 0)
+        h_layout.setContentsMargins(
+            theme.BASE_PADDING,
+            0,
+            theme.BASE_PADDING,
+            0,
+        )
 
         self._btn_back = QPushButton("Về menu")
         self._btn_back.setStyleSheet(theme.SETUP_BACK_BUTTON)
@@ -132,84 +242,92 @@ class TutorialScreen(QWidget):
         content = QWidget()
         content.setStyleSheet("background: transparent;")
         content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(60, 30, 60, 40)
-        content_layout.setSpacing(20)
+        content_layout.setContentsMargins(*theme.CONTENT_MARGIN)
+        content_layout.setSpacing(theme.SECTION_SPACING)
 
         # -- Sections --
+        image_sources = {
+            "stones": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Go_stones_on_goban.jpg",
+            "liberties": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Go_Stone_Liberties.svg",
+            "capture": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Go_capture.svg",
+            "ko": "https://upload.wikimedia.org/wikipedia/commons/6/63/Ko_%28go%29.svg",
+            "turns": "https://upload.wikimedia.org/wikipedia/commons/2/21/Go_board_19x19.png",
+            "japanese_scoring": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Go_scoring_territory.svg",
+            "chinese_scoring": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Go_scoring_area.svg",
+        }
 
-        content_layout.addWidget(_Section(
-            "Cờ Vây là gì?",
-            "Cờ Vây (còn gọi là <b>Weiqi</b> hoặc <b>Baduk</b>) là trò chơi chiến thuật "
-            "dành cho hai người. Trò chơi có nguồn gốc từ Trung Quốc cách đây hơn 4.000 năm "
-            "và là một trong những trò chơi cổ nhất vẫn còn được chơi đến nay.<br><br>"
-            "Mục tiêu rất đơn giản: <b>kiểm soát nhiều đất hơn</b> đối thủ bằng cách "
-            "đặt quân lên các giao điểm của bàn cờ.",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Cờ Vây là gì?",
+                "Cờ Vây (còn gọi là <b>Weiqi</b> hoặc <b>Baduk</b>) là trò chơi chiến thuật "
+                "dành cho hai người. Trò chơi có nguồn gốc từ Trung Quốc cách đây hơn 4.000 năm "
+                "và là một trong những trò chơi cổ nhất vẫn còn được chơi đến nay.<br><br>"
+                "Mục tiêu rất đơn giản: <b>kiểm soát nhiều đất hơn</b> đối thủ bằng cách "
+                "đặt quân lên các giao điểm của bàn cờ.",
+            ),
+            _Illustration(
+                "Ký hiệu quân cờ",
+                image_sources["stones"],
+                "Hình ảnh thực tế của quân Đen và quân Trắng trên bàn cờ Vây.",
+            ),
         ))
 
-        content_layout.addWidget(_Section(
-            "Luật cơ bản",
-            "<b>1. Bàn cờ:</b> Cờ Vây chơi trên lưới các giao điểm. Kích thước chuẩn là "
-            "9×9 (người mới), 13×13 (trung cấp) và 19×19 (tiêu chuẩn).<br><br>"
-            "<b>2. Quân:</b> Đen đi trước. Hai bên lần lượt đặt một quân mỗi lượt vào "
-            "giao điểm trống.<br><br>"
-            "<b>3. Khí:</b> Mỗi quân (hoặc nhóm quân liên thông) có các <i>khí</i> — "
-            "các giao điểm trống kề trực tiếp (trên, dưới, trái, phải). Quân ở giữa có 4 khí; "
-            "ở cạnh có 3; ở góc có 2.<br><br>"
-            "<b>4. Đã đặt thì không di chuyển.</b> Quân chỉ bị lấy khỏi bàn khi bị bắt.",
-            "#78a6d8",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Luật cơ bản",
+                "<b>1. Bàn cờ:</b> Cờ Vây chơi trên lưới các giao điểm. Kích thước chuẩn là "
+                "9×9 (người mới), 13×13 (trung cấp) và 19×19 (tiêu chuẩn).<br><br>"
+                "<b>2. Quân Đen/Trắng:</b> Đen đi trước. Hai bên lần lượt đặt 1 quân mỗi lượt "
+                "vào giao điểm trống; đã đặt thì không di chuyển quân nữa.<br><br>"
+                "<b>3. Khí:</b> Mỗi quân (hoặc nhóm quân liên thông) có các <i>khí</i> — "
+                "giao điểm trống kề trực tiếp (trên, dưới, trái, phải). Quân ở giữa có 4 khí; "
+                "ở cạnh có 3; ở góc có 2.<br><br>"
+                "<b>4. Mục tiêu:</b> Đen và Trắng đều cố gắng kiểm soát nhiều đất hơn đối thủ.",
+                "#78a6d8",
+            ),
+            _Illustration(
+                "Ví dụ về khí",
+                image_sources["liberties"],
+                "Minh hoạ các khí (liberties) quanh một quân cờ.",
+            ),
         ))
 
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ về khí:\n\n"
-            "    . . . . .        . = ô trống\n"
-            "    . . L . .        X = quân Đen\n"
-            "    . L X L .        L = khí của X\n"
-            "    . . L . .\n"
-            "    . . . . .\n\n"
-            "  Quân đơn này có 4 khí."
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Bắt quân",
+                "Khi một quân hoặc nhóm quân cùng màu <b>hết khí</b>, "
+                "chúng sẽ bị <b>bắt</b> và lấy khỏi bàn.<br><br>"
+                "Đen bắt quân Trắng (hoặc ngược lại) bằng cách lấp nốt khí cuối cùng "
+                "của nhóm đối thủ. Việc bắt diễn ra ngay sau khi bạn đặt quân.<br><br>"
+                "<b>Lưu ý:</b> Nếu nước đi của bạn đồng thời làm đối thủ hết khí "
+                "và nhóm của bạn cũng hết khí, quân đối thủ sẽ bị bắt trước, "
+                "từ đó nhóm của bạn có thể được thêm khí. Đây KHÔNG phải tự sát — "
+                "đó là một nước bắt hợp lệ.",
+                "#e38b6f",
+            ),
+            _Illustration(
+                "Ví dụ bắt quân",
+                image_sources["capture"],
+                "Ví dụ cụ thể về việc bắt quân khi nhóm đối thủ hết khí.",
+            ),
         ))
 
-        content_layout.addWidget(_Section(
-            "Bắt quân",
-            "Khi một quân hoặc nhóm quân cùng màu <b>hết khí</b>, "
-            "chúng sẽ bị <b>bắt</b> và lấy khỏi bàn.<br><br>"
-            "Bạn bắt quân đối thủ bằng cách lấp nốt khí cuối cùng của họ. "
-            "Việc bắt diễn ra ngay sau khi bạn đặt quân.<br><br>"
-            "<b>Lưu ý:</b> Nếu nước đi của bạn đồng thời làm đối thủ hết khí "
-            "và nhóm của bạn cũng hết khí, quân đối thủ sẽ bị bắt trước, "
-            "từ đó nhóm của bạn có thể được thêm khí. Đây KHÔNG phải tự sát — "
-            "đó là một nước bắt hợp lệ.",
-            "#e38b6f",
-        ))
-
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ bắt quân:\n\n"
-            "    Trước:           Sau khi Đen đi A:\n"
-            "    . X . .          . X . .\n"
-            "    X O A .    →     X . X .\n"
-            "    . X . .          . X . .\n\n"
-            "  O = quân Trắng còn 1 khí tại A.\n"
-            "  Đen đi A → Trắng bị bắt và lấy khỏi bàn."
-        ))
-
-        content_layout.addWidget(_Section(
-            "Luật Ko",
-            "Tình huống <b>ko</b> xảy ra khi một quân bị bắt và đối thủ có thể bắt lại ngay, "
-            "tạo ra vòng lặp vô hạn.<br><br>"
-            "<b>Ko đơn giản:</b> Bạn không được bắt lại ngay quân vừa bị bắt. "
-            "Bạn phải đi chỗ khác trước (đòn 'đe doạ ko'), rồi mới có thể bắt lại ở lượt sau.<br><br>"
-            "<b>Siêu Ko theo vị trí:</b> Luật chặt hơn, không cho phép bất kỳ thế cờ nào "
-            "lặp lại. Luật này xử lý cả những tình huống ko phức tạp.",
-            "#b58ad6",
-        ))
-
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ ko:\n\n"
-            "    . X O .          . X O .\n"
-            "    X O . O    →     X . X O     Đen bắt O\n"
-            "    . X O .          . X O .     tại (1,1)\n\n"
-            "  Trắng KHÔNG được đi ngay vào\n"
-            "  vị trí vừa bị bắt. Phải đi chỗ khác trước."
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Luật Ko",
+                "Tình huống <b>ko</b> xảy ra khi một quân bị bắt và đối thủ có thể bắt lại ngay, "
+                "tạo ra vòng lặp vô hạn giữa Đen và Trắng.<br><br>"
+                "<b>Ko đơn giản:</b> Bạn không được bắt lại ngay quân vừa bị bắt. "
+                "Bạn phải đi chỗ khác trước (đòn 'đe doạ ko'), rồi mới có thể bắt lại ở lượt sau.<br><br>"
+                "<b>Siêu Ko theo vị trí:</b> Luật chặt hơn, không cho phép bất kỳ thế cờ nào "
+                "lặp lại. Luật này xử lý cả những tình huống ko phức tạp.",
+                "#b58ad6",
+            ),
+            _Illustration(
+                "Vòng lặp ko",
+                image_sources["ko"],
+                "Minh hoạ tình huống ko và quy tắc không được bắt lại ngay.",
+            ),
         ))
 
         content_layout.addWidget(_Section(
@@ -221,65 +339,72 @@ class TutorialScreen(QWidget):
             "#e3779a",
         ))
 
-        content_layout.addWidget(_Section(
-            "Bỏ lượt và kết thúc ván",
-            "Bạn có thể <b>bỏ lượt</b> thay vì đặt quân. "
-            "Khi cả hai bên bỏ lượt liên tiếp, ván sẽ chuyển sang "
-            "<b>Chế độ tính điểm</b>.<br><br>"
-            "Trong chế độ tính điểm, hai bên thống nhất quân nào là 'chết' "
-            "(sẽ bị bắt chắc chắn). Nhấn vào nhóm quân để đánh dấu sống/chết, "
-            "sau đó xác nhận để tính điểm cuối.",
-            "#75bfa6",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Bỏ lượt và kết thúc ván",
+                "Đen hoặc Trắng có thể <b>bỏ lượt</b> thay vì đặt quân. "
+                "Khi cả hai bên bỏ lượt liên tiếp, ván sẽ chuyển sang "
+                "<b>Chế độ tính điểm</b>.<br><br>"
+                "Trong chế độ tính điểm, hai bên thống nhất quân nào là 'chết' "
+                "(sẽ bị bắt chắc chắn). Nhấn vào nhóm quân để đánh dấu sống/chết, "
+                "sau đó xác nhận để tính điểm cuối.",
+                "#75bfa6",
+            ),
+            _Illustration(
+                "Chuỗi lượt",
+                image_sources["turns"],
+                "Bàn cờ Go tiêu chuẩn giúp hình dung luồng lượt và giai đoạn kết thúc.",
+            ),
         ))
 
-        content_layout.addWidget(_Section(
-            "Tính điểm: Luật Nhật Bản (Tính đất)",
-            "Theo luật Nhật Bản, điểm của bạn gồm:<br><br>"
-            "<table style='color:#566070;'>"
-            "<tr><td style='padding-right:20px;'><b>Đất</b></td>"
-            "<td>Các giao điểm trống được bao quanh <i>chỉ</i> bởi quân của bạn</td></tr>"
-            "<tr><td><b>+ Bắt quân</b></td>"
-            "<td>Số quân đối thủ bị bạn bắt trong ván</td></tr>"
-            "<tr><td><b>+ Quân chết</b></td>"
-            "<td>Quân chết của đối thủ (thống nhất khi tính điểm) được tính như bắt quân</td></tr>"
-            "<tr><td><b>+ Komi</b></td>"
-            "<td>Trắng nhận komi (bù cho việc đi sau)</td></tr>"
-            "</table><br>"
-            "<b>Komi mặc định:</b> 19×19 → 6.5 · 13×13 → 5.5 · 9×9 → 3.5<br><br>"
-            "Nửa điểm (0.5) của komi giúp tránh hòa.",
-            "#d9b05c",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Tính điểm: Luật Nhật Bản (Tính đất)",
+                "Theo luật Nhật Bản, điểm của bạn gồm:<br><br>"
+                "<table style='color:#c9d1de;'>"
+                "<tr><td style='padding-right:20px;'><b>Đất</b></td>"
+                "<td>Các giao điểm trống được bao quanh <i>chỉ</i> bởi quân của bạn</td></tr>"
+                "<tr><td><b>+ Bắt quân</b></td>"
+                "<td>Số quân đối thủ bị bạn bắt trong ván</td></tr>"
+                "<tr><td><b>+ Quân chết</b></td>"
+                "<td>Quân chết của đối thủ (thống nhất khi tính điểm) được tính như bắt quân</td></tr>"
+                "<tr><td><b>+ Komi</b></td>"
+                "<td>Trắng nhận komi (bù cho việc đi sau)</td></tr>"
+                "</table><br>"
+                "<b>Komi mặc định:</b> 19×19 → 6.5 · 13×13 → 5.5 · 9×9 → 3.5<br><br>"
+                "Nửa điểm (0.5) của komi giúp tránh hòa. "
+                "Đen và Trắng đều cộng phần điểm của mình theo cách trên.",
+                "#d9b05c",
+            ),
+            _Illustration(
+                "Ví dụ tính điểm Nhật",
+                image_sources["japanese_scoring"],
+                "Minh hoạ cách tính đất (territory) theo luật Nhật Bản.",
+            ),
         ))
 
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ tính điểm Nhật (9x9):\n\n"
-            "  Komi = 3.5 (cho Trắng)\n\n"
-            "  Đen: 20 đất + 4 bắt quân      = 24.0\n"
-            "  Trắng: 18 đất + 2 bắt quân + 3.5 = 23.5\n\n"
-            "  → Đen thắng 0.5 điểm"
-        ))
-
-        content_layout.addWidget(_Section(
-            "Tính điểm: Luật Trung Quốc (Tính diện tích)",
-            "Theo luật Trung Quốc, điểm của bạn gồm:<br><br>"
-            "<table style='color:#566070;'>"
-            "<tr><td style='padding-right:20px;'><b>Quân trên bàn</b></td>"
-            "<td>Số quân còn lại của bạn trên bàn</td></tr>"
-            "<tr><td><b>+ Đất</b></td>"
-            "<td>Các giao điểm trống được bao quanh bởi quân của bạn</td></tr>"
-            "<tr><td><b>+ Komi</b></td>"
-            "<td>Trắng nhận komi</td></tr>"
-            "</table><br>"
-            "Lưu ý: Bắt quân KHÔNG được tính riêng trong luật Trung Quốc, "
-            "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ.",
-            "#6aa9e0",
-        ))
-
-        content_layout.addWidget(_Diagram(
-            "  Ví dụ tính điểm Trung Quốc (9x9):\n\n"
-            "  Komi = 3.5 (cho Trắng)\n\n"
-            "  Đen: 30 quân + 10 đất      = 40.0\n"
-            "  Trắng: 25 quân + 12 đất + 3.5 = 40.5\n\n"
-            "  → Trắng thắng 0.5 điểm"
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Tính điểm: Luật Trung Quốc (Tính diện tích)",
+                "Theo luật Trung Quốc, điểm của bạn gồm:<br><br>"
+                "<table style='color:#c9d1de;'>"
+                "<tr><td style='padding-right:20px;'><b>Quân trên bàn</b></td>"
+                "<td>Số quân còn lại của bạn trên bàn</td></tr>"
+                "<tr><td><b>+ Đất</b></td>"
+                "<td>Các giao điểm trống được bao quanh bởi quân của bạn</td></tr>"
+                "<tr><td><b>+ Komi</b></td>"
+                "<td>Trắng nhận komi</td></tr>"
+                "</table><br>"
+                "Lưu ý: Bắt quân KHÔNG được tính riêng trong luật Trung Quốc, "
+                "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ. "
+                "Đen và Trắng đều cộng điểm theo cách này.",
+                "#6aa9e0",
+            ),
+            _Illustration(
+                "Ví dụ tính điểm Trung Quốc",
+                image_sources["chinese_scoring"],
+                "Minh hoạ cách tính diện tích (area) theo luật Trung Quốc.",
+            ),
         ))
 
         content_layout.addWidget(_Section(
@@ -305,7 +430,7 @@ class TutorialScreen(QWidget):
             "#7fbfa1",
         ))
 
-        content_layout.addSpacing(30)
+        content_layout.addSpacing(theme.SECTION_SPACING)
 
         scroll.setWidget(content)
         outer.addWidget(scroll)
@@ -316,7 +441,7 @@ class TutorialScreen(QWidget):
         p = QPainter(self)
         w, h = self.width(), self.height()
         grad = QLinearGradient(0, 0, w, h)
-        grad.setColorAt(0.0, QColor(246, 248, 252))
-        grad.setColorAt(1.0, QColor(235, 239, 247))
+        grad.setColorAt(0.0, theme.BACKGROUND_GRADIENT_START)
+        grad.setColorAt(1.0, theme.BACKGROUND_GRADIENT_MID)
         p.fillRect(self.rect(), grad)
         p.end()
