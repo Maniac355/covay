@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from typing import Optional
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QLinearGradient, QPainter
+from PySide6.QtCore import Qt, Signal, QUrl
+from PySide6.QtGui import QLinearGradient, QPainter, QPixmap
+from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -68,10 +69,77 @@ class _Section(QFrame):
 # Illustration widgets
 # ---------------------------------------------------------------------------
 
-class _Illustration(QFrame):
-    """Visual card with a title and rich-text diagram."""
+class _RemoteImage(QLabel):
+    """Loads a remote image and scales it to fit the card width."""
 
-    def __init__(self, title: str, body: str, parent: Optional[QWidget] = None) -> None:
+    def __init__(
+        self,
+        image_url: str,
+        alt_text: str,
+        parent: Optional[QWidget] = None,
+    ) -> None:
+        super().__init__(parent)
+        self._image_url = image_url
+        self._alt_text = alt_text
+        self._pixmap: Optional[QPixmap] = None
+        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.setMinimumHeight(160)
+        self.setWordWrap(True)
+        self.setStyleSheet(
+            "QLabel { background-color: #1f2430; border-radius: 8px; padding: 6px; }"
+            "QLabel { color: #9aa3b2; font-size: 12px; }"
+        )
+        self.setText(f"{alt_text}\n(đang tải hình...)")
+
+        self._network = QNetworkAccessManager(self)
+        request = QNetworkRequest(QUrl(self._image_url))
+        request.setRawHeader(b"User-Agent", b"Covay-Go-Guide/1.0")
+        reply = self._network.get(request)
+        reply.finished.connect(lambda: self._handle_reply(reply))
+
+    def _handle_reply(self, reply) -> None:
+        if reply.error():
+            self.setText(f"{self._alt_text}\n(Không tải được hình.)")
+            reply.deleteLater()
+            return
+
+        data = reply.readAll()
+        pixmap = QPixmap()
+        if not pixmap.loadFromData(data):
+            self.setText(f"{self._alt_text}\n(Không đọc được hình.)")
+            reply.deleteLater()
+            return
+
+        self._pixmap = pixmap
+        self._update_scaled_pixmap()
+        reply.deleteLater()
+
+    def _update_scaled_pixmap(self) -> None:
+        if not self._pixmap:
+            return
+        target_width = max(1, self.width() - 12)
+        scaled = self._pixmap.scaledToWidth(
+            target_width,
+            Qt.TransformationMode.SmoothTransformation,
+        )
+        self.setPixmap(scaled)
+
+    def resizeEvent(self, event) -> None:  # type: ignore[override]
+        super().resizeEvent(event)
+        if self._pixmap:
+            self._update_scaled_pixmap()
+
+
+class _Illustration(QFrame):
+    """Visual card with a title, remote image, and caption."""
+
+    def __init__(
+        self,
+        title: str,
+        image_url: str,
+        caption: str,
+        parent: Optional[QWidget] = None,
+    ) -> None:
         super().__init__(parent)
         self.setStyleSheet(
             "QFrame { background-color: #2a303c; border-radius: 12px; border: 1px solid #3d4554; }"
@@ -90,11 +158,14 @@ class _Illustration(QFrame):
         lbl_title.setStyleSheet("color: #b8c0cf;")
         layout.addWidget(lbl_title)
 
-        lbl_body = QLabel(body)
-        lbl_body.setTextFormat(Qt.TextFormat.RichText)
-        lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.5; font-size: 14px;")
-        lbl_body.setWordWrap(True)
-        layout.addWidget(lbl_body)
+        img = _RemoteImage(image_url, title)
+        layout.addWidget(img)
+
+        lbl_caption = QLabel(caption)
+        lbl_caption.setTextFormat(Qt.TextFormat.RichText)
+        lbl_caption.setStyleSheet("color: #c9d1de; line-height: 1.5; font-size: 13px;")
+        lbl_caption.setWordWrap(True)
+        layout.addWidget(lbl_caption)
 
 
 class _SectionRow(QWidget):
@@ -175,6 +246,15 @@ class TutorialScreen(QWidget):
         content_layout.setSpacing(theme.SECTION_SPACING)
 
         # -- Sections --
+        image_sources = {
+            "stones": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Go_stones_on_goban.jpg",
+            "liberties": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Go_Stone_Liberties.svg",
+            "capture": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Go_capture.svg",
+            "ko": "https://upload.wikimedia.org/wikipedia/commons/6/63/Ko_%28go%29.svg",
+            "turns": "https://upload.wikimedia.org/wikipedia/commons/2/21/Go_board_19x19.png",
+            "japanese_scoring": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Go_scoring_territory.svg",
+            "chinese_scoring": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Go_scoring_area.svg",
+        }
 
         content_layout.addWidget(_SectionRow(
             _Section(
@@ -187,17 +267,8 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ký hiệu quân cờ",
-                "<div style='font-family: \"Segoe UI\"; font-size: 14px; color:#c9d1de;'>"
-                "<b style='color:#111;'>●</b> Quân Đen &nbsp;&nbsp; "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; "
-                "border: 1px solid #6b7485; border-radius: 50%; padding: 1px 3px;'>○</span> "
-                "Quân Trắng &nbsp;&nbsp; <b style='color:#c2c7d1;'>●</b> Đánh dấu khí &nbsp;&nbsp; "
-                "<b style='color:#8c95a4;'>·</b> Giao điểm trống<br><br>"
-                "<span style='font-size: 20px; color:#111;'>● ● ● ●</span>"
-                "&nbsp;&nbsp;"
-                "<span style='font-size: 20px; color:#ffffff; text-shadow: 0 0 1px #3f4755; "
-                "border: 1px solid #6b7485; border-radius: 50%; padding: 1px 3px;'>○ ○ ○</span>"
-                "</div>",
+                image_sources["stones"],
+                "Hình ảnh thực tế của quân Đen và quân Trắng trên bàn cờ Vây.",
             ),
         ))
 
@@ -216,41 +287,8 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ví dụ về khí",
-                "<div style='color:#c9d1de;'>"
-                "<pre style='font-family: Consolas; font-size: 13px; line-height: 1.5; margin: 0;'>"
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#c2c7d1;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#c2c7d1;'>●</span> "
-                "<span style='color:#111;'>●</span> "
-                "<span style='color:#c2c7d1;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#c2c7d1;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#9aa3b2;'>·</span>"
-                "</pre>"
-                "<div style='margin-top: 6px;'>"
-                "<span style='color:#9aa3b2;'>·</span> ô trống &nbsp; "
-                "<span style='color:#c2c7d1;'>●</span> khí &nbsp; "
-                "<span style='color:#111;'>●</span> quân Đen"
-                "</div>"
-                "<div style='margin-top: 6px; font-weight: 600;'>Quân đơn có 4 khí.</div>"
-                "</div>",
+                image_sources["liberties"],
+                "Minh hoạ các khí (liberties) quanh một quân cờ.",
             ),
         ))
 
@@ -269,30 +307,8 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ví dụ bắt quân",
-                "<div style='color:#c9d1de;'>"
-                "<div style='display:flex; justify-content: space-between; font-weight:600; margin-bottom: 6px;'>"
-                "<span>Trước</span><span>Sau khi Đen đi A</span></div>"
-                "<div style='display:flex; gap: 28px;'>"
-                "<pre style='font-family: Consolas; font-size: 14px; line-height: 1.6; margin: 0;'>"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#a06c2c;'>A</span> <span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>"
-                "</pre>"
-                "<pre style='font-family: Consolas; font-size: 14px; line-height: 1.6; margin: 0;'>"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#111;'>●</span> <span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#111;'>●</span> <span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#9aa3b2;'>·</span>"
-                "</pre>"
-                "</div>"
-                "<div style='margin-top: 6px; font-weight: 600;'>Trắng hết khí nên bị bắt.</div>"
-                "</div>",
+                image_sources["capture"],
+                "Ví dụ cụ thể về việc bắt quân khi nhóm đối thủ hết khí.",
             ),
         ))
 
@@ -309,36 +325,8 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Vòng lặp ko",
-                "<div style='color:#c9d1de;'>"
-                "<div style='display:flex; justify-content: space-between; font-weight:600; margin-bottom: 6px;'>"
-                "<span>Trước</span><span>Sau khi Đen bắt</span></div>"
-                "<div style='display:flex; gap: 28px;'>"
-                "<pre style='font-family: Consolas; font-size: 14px; line-height: 1.6; margin: 0;'>"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span>\n"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#9aa3b2;'>·</span>"
-                "</pre>"
-                "<pre style='font-family: Consolas; font-size: 14px; line-height: 1.6; margin: 0;'>"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#9aa3b2;'>·</span>\n"
-                "<span style='color:#111;'>●</span> <span style='color:#9aa3b2;'>·</span> "
-                "<span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span>\n"
-                "<span style='color:#9aa3b2;'>·</span> <span style='color:#111;'>●</span> "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "<span style='color:#9aa3b2;'>·</span>"
-                "</pre>"
-                "</div>"
-                "<div style='margin-top: 6px; font-weight: 600;'>Trắng không được bắt lại ngay.</div>"
-                "</div>",
+                image_sources["ko"],
+                "Minh hoạ tình huống ko và quy tắc không được bắt lại ngay.",
             ),
         ))
 
@@ -364,12 +352,8 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Chuỗi lượt",
-                "<div style='font-family: \"Segoe UI\"; font-size: 12px;'>"
-                "<span style='color:#1b1b1b;'>●</span> Đen đi &nbsp;→&nbsp; "
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> Trắng đi "
-                "&nbsp;→&nbsp; <b>Bỏ lượt</b> × 2<br><br>"
-                "<span style='color:#7b8393;'>Ván chuyển sang tính điểm.</span>"
-                "</div>",
+                image_sources["turns"],
+                "Bàn cờ Go tiêu chuẩn giúp hình dung luồng lượt và giai đoạn kết thúc.",
             ),
         ))
 
@@ -394,13 +378,8 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ví dụ tính điểm Nhật",
-                "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
-                "<b>Komi:</b> 3.5 (Trắng)<br>"
-                "<span style='color:#1b1b1b;'>●</span> Đen: 20 đất + 4 bắt = 24.0<br>"
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "Trắng: 18 đất + 2 bắt + 3.5 = 23.5<br><br>"
-                "<b>Đen thắng 0.5</b>"
-                "</div>",
+                image_sources["japanese_scoring"],
+                "Minh hoạ cách tính đất (territory) theo luật Nhật Bản.",
             ),
         ))
 
@@ -423,13 +402,8 @@ class TutorialScreen(QWidget):
             ),
             _Illustration(
                 "Ví dụ tính điểm Trung Quốc",
-                "<div style='font-family: \"Consolas\"; font-size: 12px;'>"
-                "<b>Komi:</b> 3.5 (Trắng)<br>"
-                "<span style='color:#1b1b1b;'>●</span> Đen: 30 quân + 10 đất = 40.0<br>"
-                "<span style='color:#ffffff; text-shadow: 0 0 1px #3f4755; border: 1px solid #6b7485; border-radius: 50%; padding: 0 2px;'>○</span> "
-                "Trắng: 25 quân + 12 đất + 3.5 = 40.5<br><br>"
-                "<b>Trắng thắng 0.5</b>"
-                "</div>",
+                image_sources["chinese_scoring"],
+                "Minh hoạ cách tính diện tích (area) theo luật Trung Quốc.",
             ),
         ))
 
