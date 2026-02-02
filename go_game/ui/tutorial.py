@@ -246,11 +246,13 @@ class TutorialScreen(QWidget):
         content_layout.setSpacing(theme.SECTION_SPACING)
 
         # -- Sections --
+        # Image sources from Wikimedia Commons (verified working URLs)
         image_sources = {
             "stones": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Go_stones_on_goban.jpg",
             "liberties": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Go_Stone_Liberties.svg",
             "capture": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Go_capture.svg",
             "ko": "https://upload.wikimedia.org/wikipedia/commons/6/63/Ko_%28go%29.svg",
+            "suicide": "https://upload.wikimedia.org/wikipedia/commons/4/40/Go_adjacent_stones.svg",
             "turns": "https://upload.wikimedia.org/wikipedia/commons/2/21/Go_board_19x19.png",
             "japanese_scoring": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Go_scoring_territory.svg",
             "chinese_scoring": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Go_scoring_area.svg",
@@ -259,16 +261,17 @@ class TutorialScreen(QWidget):
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Cờ Vây là gì?",
-                "Cờ Vây (còn gọi là <b>Weiqi</b> hoặc <b>Baduk</b>) là trò chơi chiến thuật "
-                "dành cho hai người. Trò chơi có nguồn gốc từ Trung Quốc cách đây hơn 4.000 năm "
+                "Cờ Vây (còn gọi là <b>Weiqi</b> ở Trung Quốc, <b>Baduk</b> ở Hàn Quốc, "
+                "<b>Go</b> ở Nhật Bản) là trò chơi chiến thuật dành cho hai người.<br><br>"
+                "Trò chơi có nguồn gốc từ Trung Quốc cách đây hơn <b>4.000 năm</b> "
                 "và là một trong những trò chơi cổ nhất vẫn còn được chơi đến nay.<br><br>"
-                "Mục tiêu rất đơn giản: <b>kiểm soát nhiều đất hơn</b> đối thủ bằng cách "
-                "đặt quân lên các giao điểm của bàn cờ.",
+                "Mục tiêu: <b>kiểm soát nhiều đất hơn</b> đối thủ bằng cách "
+                "đặt quân lên các giao điểm của bàn cờ và bao vây lãnh thổ.",
             ),
             _Illustration(
-                "Ký hiệu quân cờ",
+                "Bàn cờ và quân cờ",
                 image_sources["stones"],
-                "Hình ảnh thực tế của quân Đen và quân Trắng trên bàn cờ Vây.",
+                "Bàn cờ Vây truyền thống (Goban) với quân <b>Đen</b> và <b>Trắng</b>.",
             ),
         ))
 
@@ -288,7 +291,7 @@ class TutorialScreen(QWidget):
             _Illustration(
                 "Ví dụ về khí",
                 image_sources["liberties"],
-                "Minh hoạ các khí (liberties) quanh một quân cờ.",
+                "Các điểm được đánh dấu là <b>khí</b> của quân cờ (trên, dưới, trái, phải).",
             ),
         ))
 
@@ -308,7 +311,7 @@ class TutorialScreen(QWidget):
             _Illustration(
                 "Ví dụ bắt quân",
                 image_sources["capture"],
-                "Ví dụ cụ thể về việc bắt quân khi nhóm đối thủ hết khí.",
+                "Khi đặt quân lấp hết khí cuối cùng, quân đối thủ bị <b>bắt</b> và loại khỏi bàn.",
             ),
         ))
 
@@ -324,19 +327,30 @@ class TutorialScreen(QWidget):
                 "#b58ad6",
             ),
             _Illustration(
-                "Vòng lặp ko",
+                "Tình huống Ko",
                 image_sources["ko"],
-                "Minh hoạ tình huống ko và quy tắc không được bắt lại ngay.",
+                "Sau khi bắt 1 quân, đối thủ <b>không được bắt lại ngay</b> — phải đi chỗ khác trước.",
             ),
         ))
 
-        content_layout.addWidget(_Section(
-            "Tự sát",
-            "Một <b>nước tự sát</b> là khi bạn đặt quân khiến quân (hoặc nhóm) của bạn "
-            "hết khí mà không bắt được quân đối thủ.<br><br>"
-            "Mặc định, tự sát <b>bị cấm</b>. Một số luật cho phép — "
-            "bạn có thể bật/tắt trong phần cài đặt.",
-            "#e3779a",
+        content_layout.addWidget(_SectionRow(
+            _Section(
+                "Tự sát",
+                "Một <b>nước tự sát</b> là khi bạn đặt quân khiến quân (hoặc nhóm) của bạn "
+                "hết khí mà không bắt được quân đối thủ.<br><br>"
+                "<b>Ví dụ:</b> Nếu Trắng bị bao vây bởi Đen và chỉ còn một ô trống bên trong, "
+                "Đen không thể đặt quân vào ô đó (vì sẽ tự hết khí ngay lập tức).<br><br>"
+                "<b>Ngoại lệ:</b> Nếu nước đi đó bắt được quân đối thủ, thì KHÔNG phải tự sát — "
+                "quân đối thủ bị bắt trước, tạo khí cho quân vừa đặt.<br><br>"
+                "Mặc định, tự sát <b>bị cấm</b>. Một số luật (như New Zealand, Ing) cho phép — "
+                "bạn có thể bật/tắt trong phần cài đặt.",
+                "#e3779a",
+            ),
+            _Illustration(
+                "Ví dụ tự sát",
+                image_sources["suicide"],
+                "Nước đi được đánh dấu X là <b>tự sát</b> — quân đặt vào sẽ hết khí ngay.",
+            ),
         ))
 
         content_layout.addWidget(_SectionRow(
@@ -351,9 +365,9 @@ class TutorialScreen(QWidget):
                 "#75bfa6",
             ),
             _Illustration(
-                "Chuỗi lượt",
+                "Ván cờ kết thúc",
                 image_sources["turns"],
-                "Bàn cờ Go tiêu chuẩn giúp hình dung luồng lượt và giai đoạn kết thúc.",
+                "Ván cờ kết thúc khi cả hai bên <b>bỏ lượt liên tiếp</b> — bắt đầu tính điểm.",
             ),
         ))
 
@@ -377,9 +391,9 @@ class TutorialScreen(QWidget):
                 "#d9b05c",
             ),
             _Illustration(
-                "Ví dụ tính điểm Nhật",
+                "Tính điểm Nhật Bản",
                 image_sources["japanese_scoring"],
-                "Minh hoạ cách tính đất (territory) theo luật Nhật Bản.",
+                "Điểm = <b>Đất bao vây</b> + Quân bắt được + Komi (cho Trắng).",
             ),
         ))
 
@@ -401,9 +415,9 @@ class TutorialScreen(QWidget):
                 "#6aa9e0",
             ),
             _Illustration(
-                "Ví dụ tính điểm Trung Quốc",
+                "Tính điểm Trung Quốc",
                 image_sources["chinese_scoring"],
-                "Minh hoạ cách tính diện tích (area) theo luật Trung Quốc.",
+                "Điểm = <b>Quân trên bàn</b> + Đất bao vây + Komi (cho Trắng).",
             ),
         ))
 
