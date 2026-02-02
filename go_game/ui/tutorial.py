@@ -3,15 +3,16 @@ Tutorial / How-to-Play screen.
 
 A scrollable guide explaining Go rules, capturing, ko, and scoring
 for both Japanese and Chinese rulesets.
+
+Uses local diagram widgets (no internet required).
 """
 
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, Callable
 
-from PySide6.QtCore import Qt, Signal, QUrl
-from PySide6.QtGui import QLinearGradient, QPainter, QPixmap
-from PySide6.QtNetwork import QNetworkAccessManager, QNetworkRequest
+from PySide6.QtCore import Qt, Signal
+from PySide6.QtGui import QLinearGradient, QPainter
 from PySide6.QtWidgets import (
     QFrame,
     QHBoxLayout,
@@ -23,6 +24,17 @@ from PySide6.QtWidgets import (
 )
 
 from . import theme
+from .diagrams import (
+    GoDiagram,
+    create_stones_diagram,
+    create_liberties_diagram,
+    create_capture_diagram,
+    create_ko_diagram,
+    create_suicide_diagram,
+    create_game_end_diagram,
+    create_japanese_scoring_diagram,
+    create_chinese_scoring_diagram,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -41,149 +53,90 @@ class _Section(QFrame):
     ) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #242a36; border-radius: 12px; border: 1px solid #3d4554; }"
+            "QFrame { background-color: #242a36; border-radius: 14px; }"
         )
+        padding = theme.BASE_PADDING + 4
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(
-            theme.BASE_PADDING,
-            theme.BASE_PADDING,
-            theme.BASE_PADDING,
-            theme.BASE_PADDING,
-        )
-        layout.setSpacing(theme.TIGHT_SPACING)
+        layout.setContentsMargins(padding, padding, padding, padding)
+        layout.setSpacing(theme.TIGHT_SPACING + 4)
 
         lbl_title = QLabel(title)
-        lbl_title.setFont(theme.font_bold(16))
+        lbl_title.setFont(theme.font_bold(17))
         lbl_title.setStyleSheet(f"color: {accent_color};")
         layout.addWidget(lbl_title)
 
         lbl_body = QLabel(body)
-        lbl_body.setFont(theme.font_normal(13))
+        lbl_body.setFont(theme.font_normal(14))
         lbl_body.setWordWrap(True)
-        lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.5;")
+        lbl_body.setStyleSheet("color: #c9d1de; line-height: 1.6;")
         lbl_body.setTextFormat(Qt.TextFormat.RichText)
         layout.addWidget(lbl_body)
 
 
 # ---------------------------------------------------------------------------
-# Illustration widgets
+# Diagram card widget
 # ---------------------------------------------------------------------------
 
-class _RemoteImage(QLabel):
-    """Loads a remote image and scales it to fit the card width."""
-
-    def __init__(
-        self,
-        image_url: str,
-        alt_text: str,
-        parent: Optional[QWidget] = None,
-    ) -> None:
-        super().__init__(parent)
-        self._image_url = image_url
-        self._alt_text = alt_text
-        self._pixmap: Optional[QPixmap] = None
-        self.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self.setMinimumHeight(160)
-        self.setWordWrap(True)
-        self.setStyleSheet(
-            "QLabel { background-color: #1f2430; border-radius: 8px; padding: 6px; }"
-            "QLabel { color: #9aa3b2; font-size: 12px; }"
-        )
-        self.setText(f"{alt_text}\n(đang tải hình...)")
-
-        self._network = QNetworkAccessManager(self)
-        request = QNetworkRequest(QUrl(self._image_url))
-        request.setRawHeader(b"User-Agent", b"Covay-Go-Guide/1.0")
-        reply = self._network.get(request)
-        reply.finished.connect(lambda: self._handle_reply(reply))
-
-    def _handle_reply(self, reply) -> None:
-        if reply.error():
-            self.setText(f"{self._alt_text}\n(Không tải được hình.)")
-            reply.deleteLater()
-            return
-
-        data = reply.readAll()
-        pixmap = QPixmap()
-        if not pixmap.loadFromData(data):
-            self.setText(f"{self._alt_text}\n(Không đọc được hình.)")
-            reply.deleteLater()
-            return
-
-        self._pixmap = pixmap
-        self._update_scaled_pixmap()
-        reply.deleteLater()
-
-    def _update_scaled_pixmap(self) -> None:
-        if not self._pixmap:
-            return
-        target_width = max(1, self.width() - 12)
-        scaled = self._pixmap.scaledToWidth(
-            target_width,
-            Qt.TransformationMode.SmoothTransformation,
-        )
-        self.setPixmap(scaled)
-
-    def resizeEvent(self, event) -> None:  # type: ignore[override]
-        super().resizeEvent(event)
-        if self._pixmap:
-            self._update_scaled_pixmap()
-
-
-class _Illustration(QFrame):
-    """Visual card with a title, remote image, and caption."""
+class _DiagramCard(QFrame):
+    """Visual card with a title, local diagram, and caption."""
 
     def __init__(
         self,
         title: str,
-        image_url: str,
+        diagram_factory: Callable[[], GoDiagram],
         caption: str,
         parent: Optional[QWidget] = None,
     ) -> None:
         super().__init__(parent)
         self.setStyleSheet(
-            "QFrame { background-color: #2a303c; border-radius: 12px; border: 1px solid #3d4554; }"
+            "QFrame { background-color: #2a303c; border-radius: 14px; }"
         )
+        self.setMinimumWidth(200)
+        self.setMaximumWidth(380)
+
+        padding = theme.BASE_PADDING
         layout = QVBoxLayout(self)
-        layout.setContentsMargins(
-            theme.BASE_PADDING,
-            theme.BASE_PADDING,
-            theme.BASE_PADDING,
-            theme.BASE_PADDING,
-        )
+        layout.setContentsMargins(padding, padding, padding, padding)
         layout.setSpacing(theme.TIGHT_SPACING)
 
         lbl_title = QLabel(title)
-        lbl_title.setFont(theme.font_bold(13))
+        lbl_title.setFont(theme.font_bold(14))
         lbl_title.setStyleSheet("color: #b8c0cf;")
         layout.addWidget(lbl_title)
 
-        img = _RemoteImage(image_url, title)
-        layout.addWidget(img)
+        # Create diagram
+        diagram = diagram_factory()
+        diagram.setMinimumSize(160, 160)
+        diagram.setMaximumHeight(220)
+        layout.addWidget(diagram, stretch=1)
 
         lbl_caption = QLabel(caption)
         lbl_caption.setTextFormat(Qt.TextFormat.RichText)
-        lbl_caption.setStyleSheet("color: #c9d1de; line-height: 1.5; font-size: 13px;")
+        lbl_caption.setStyleSheet("color: #c9d1de; line-height: 1.4; font-size: 13px;")
         lbl_caption.setWordWrap(True)
         layout.addWidget(lbl_caption)
 
 
+# ---------------------------------------------------------------------------
+# Section row widget
+# ---------------------------------------------------------------------------
+
 class _SectionRow(QWidget):
-    """Row combining a section description and an illustration."""
+    """Row combining a section description and a diagram."""
 
     def __init__(
         self,
         section: _Section,
-        illustration: Optional[QWidget] = None,
+        diagram_card: Optional[QWidget] = None,
         parent: Optional[QWidget] = None,
     ) -> None:
         super().__init__(parent)
         layout = QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(theme.ITEM_SPACING)
+        layout.setSpacing(theme.ITEM_SPACING + 4)
         layout.addWidget(section, stretch=3)
-        if illustration is not None:
-            layout.addWidget(illustration, stretch=2)
+        if diagram_card is not None:
+            layout.addWidget(diagram_card, stretch=2)
 
 
 # ---------------------------------------------------------------------------
@@ -191,7 +144,7 @@ class _SectionRow(QWidget):
 # ---------------------------------------------------------------------------
 
 class TutorialScreen(QWidget):
-    """Scrollable how-to-play guide."""
+    """Scrollable how-to-play guide with local diagrams."""
 
     back_clicked = Signal()
 
@@ -215,7 +168,7 @@ class TutorialScreen(QWidget):
             0,
         )
 
-        self._btn_back = QPushButton("Về menu")
+        self._btn_back = QPushButton("Quay lại")
         self._btn_back.setStyleSheet(theme.SETUP_BACK_BUTTON)
         self._btn_back.setCursor(Qt.CursorShape.PointingHandCursor)
         self._btn_back.clicked.connect(self.back_clicked)
@@ -227,9 +180,9 @@ class TutorialScreen(QWidget):
         lbl_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
         h_layout.addWidget(lbl_title, stretch=1)
 
-        # balance spacer
+        # Balance spacer
         spacer = QWidget()
-        spacer.setFixedWidth(120)
+        spacer.setFixedWidth(100)
         h_layout.addWidget(spacer)
 
         outer.addWidget(header)
@@ -245,19 +198,9 @@ class TutorialScreen(QWidget):
         content_layout.setContentsMargins(*theme.CONTENT_MARGIN)
         content_layout.setSpacing(theme.SECTION_SPACING)
 
-        # -- Sections --
-        # Image sources from Wikimedia Commons (verified working URLs)
-        image_sources = {
-            "stones": "https://upload.wikimedia.org/wikipedia/commons/2/2f/Go_stones_on_goban.jpg",
-            "liberties": "https://upload.wikimedia.org/wikipedia/commons/0/0b/Go_Stone_Liberties.svg",
-            "capture": "https://upload.wikimedia.org/wikipedia/commons/5/5d/Go_capture.svg",
-            "ko": "https://upload.wikimedia.org/wikipedia/commons/6/63/Ko_%28go%29.svg",
-            "suicide": "https://upload.wikimedia.org/wikipedia/commons/4/40/Go_adjacent_stones.svg",
-            "turns": "https://upload.wikimedia.org/wikipedia/commons/2/21/Go_board_19x19.png",
-            "japanese_scoring": "https://upload.wikimedia.org/wikipedia/commons/4/4b/Go_scoring_territory.svg",
-            "chinese_scoring": "https://upload.wikimedia.org/wikipedia/commons/7/7a/Go_scoring_area.svg",
-        }
+        # -- Sections with local diagrams --
 
+        # 1. What is Go?
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Cờ Vây là gì?",
@@ -268,13 +211,14 @@ class TutorialScreen(QWidget):
                 "Mục tiêu: <b>kiểm soát nhiều đất hơn</b> đối thủ bằng cách "
                 "đặt quân lên các giao điểm của bàn cờ và bao vây lãnh thổ.",
             ),
-            _Illustration(
+            _DiagramCard(
                 "Bàn cờ và quân cờ",
-                image_sources["stones"],
-                "Bàn cờ Vây truyền thống (Goban) với quân <b>Đen</b> và <b>Trắng</b>.",
+                create_stones_diagram,
+                "Quân <b>Đen</b> và <b>Trắng</b> được đặt trên các giao điểm.",
             ),
         ))
 
+        # 2. Basic rules
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Luật cơ bản",
@@ -288,13 +232,14 @@ class TutorialScreen(QWidget):
                 "<b>4. Mục tiêu:</b> Đen và Trắng đều cố gắng kiểm soát nhiều đất hơn đối thủ.",
                 "#78a6d8",
             ),
-            _Illustration(
+            _DiagramCard(
                 "Ví dụ về khí",
-                image_sources["liberties"],
-                "Các điểm được đánh dấu là <b>khí</b> của quân cờ (trên, dưới, trái, phải).",
+                create_liberties_diagram,
+                "Các điểm <b>xanh</b> đánh số là <b>khí</b> của quân đen ở giữa.",
             ),
         ))
 
+        # 3. Capturing
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Bắt quân",
@@ -308,13 +253,14 @@ class TutorialScreen(QWidget):
                 "đó là một nước bắt hợp lệ.",
                 "#e38b6f",
             ),
-            _Illustration(
+            _DiagramCard(
                 "Ví dụ bắt quân",
-                image_sources["capture"],
-                "Khi đặt quân lấp hết khí cuối cùng, quân đối thủ bị <b>bắt</b> và loại khỏi bàn.",
+                create_capture_diagram,
+                "Đen đặt vào vị trí <b>X</b> sẽ bắt quân Trắng (lấp khí cuối cùng).",
             ),
         ))
 
+        # 4. Ko rule
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Luật Ko",
@@ -326,13 +272,14 @@ class TutorialScreen(QWidget):
                 "lặp lại. Luật này xử lý cả những tình huống ko phức tạp.",
                 "#b58ad6",
             ),
-            _Illustration(
+            _DiagramCard(
                 "Tình huống Ko",
-                image_sources["ko"],
-                "Sau khi bắt 1 quân, đối thủ <b>không được bắt lại ngay</b> — phải đi chỗ khác trước.",
+                create_ko_diagram,
+                "Vị trí đánh dấu <b>Ko</b> — không được bắt lại ngay lập tức.",
             ),
         ))
 
+        # 5. Suicide
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Tự sát",
@@ -346,13 +293,14 @@ class TutorialScreen(QWidget):
                 "bạn có thể bật/tắt trong phần cài đặt.",
                 "#e3779a",
             ),
-            _Illustration(
+            _DiagramCard(
                 "Ví dụ tự sát",
-                image_sources["suicide"],
-                "Nước đi được đánh dấu X là <b>tự sát</b> — quân đặt vào sẽ hết khí ngay.",
+                create_suicide_diagram,
+                "Vị trí <b>X</b> là tự sát — quân đặt vào sẽ hết khí ngay.",
             ),
         ))
 
+        # 6. Passing and game end
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Bỏ lượt và kết thúc ván",
@@ -364,13 +312,14 @@ class TutorialScreen(QWidget):
                 "sau đó xác nhận để tính điểm cuối.",
                 "#75bfa6",
             ),
-            _Illustration(
+            _DiagramCard(
                 "Ván cờ kết thúc",
-                image_sources["turns"],
-                "Ván cờ kết thúc khi cả hai bên <b>bỏ lượt liên tiếp</b> — bắt đầu tính điểm.",
+                create_game_end_diagram,
+                "Hai bên đã chiếm <b>lãnh thổ</b> — sẵn sàng tính điểm.",
             ),
         ))
 
+        # 7. Japanese scoring
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Tính điểm: Luật Nhật Bản (Tính đất)",
@@ -386,17 +335,17 @@ class TutorialScreen(QWidget):
                 "<td>Trắng nhận komi (bù cho việc đi sau)</td></tr>"
                 "</table><br>"
                 "<b>Komi mặc định:</b> 19×19 → 6.5 · 13×13 → 5.5 · 9×9 → 3.5<br><br>"
-                "Nửa điểm (0.5) của komi giúp tránh hòa. "
-                "Đen và Trắng đều cộng phần điểm của mình theo cách trên.",
+                "Nửa điểm (0.5) của komi giúp tránh hòa.",
                 "#d9b05c",
             ),
-            _Illustration(
+            _DiagramCard(
                 "Tính điểm Nhật Bản",
-                image_sources["japanese_scoring"],
-                "Điểm = <b>Đất bao vây</b> + Quân bắt được + Komi (cho Trắng).",
+                create_japanese_scoring_diagram,
+                "Điểm = <b>Đất</b> (ô màu) + Quân bắt + Komi.",
             ),
         ))
 
+        # 8. Chinese scoring
         content_layout.addWidget(_SectionRow(
             _Section(
                 "Tính điểm: Luật Trung Quốc (Tính diện tích)",
@@ -410,17 +359,17 @@ class TutorialScreen(QWidget):
                 "<td>Trắng nhận komi</td></tr>"
                 "</table><br>"
                 "Lưu ý: Bắt quân KHÔNG được tính riêng trong luật Trung Quốc, "
-                "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ. "
-                "Đen và Trắng đều cộng điểm theo cách này.",
+                "vì quân bị bắt sẽ làm giảm số quân trên bàn của đối thủ.",
                 "#6aa9e0",
             ),
-            _Illustration(
+            _DiagramCard(
                 "Tính điểm Trung Quốc",
-                image_sources["chinese_scoring"],
-                "Điểm = <b>Quân trên bàn</b> + Đất bao vây + Komi (cho Trắng).",
+                create_chinese_scoring_diagram,
+                "Điểm = <b>Quân trên bàn</b> + Đất + Komi.",
             ),
         ))
 
+        # 9. Japanese vs Chinese
         content_layout.addWidget(_Section(
             "Nhật Bản vs Trung Quốc: Khi nào khác biệt?",
             "Trong đa số ván thông thường, hai cách tính điểm cho ra <b>cùng người thắng</b>. "
@@ -433,6 +382,7 @@ class TutorialScreen(QWidget):
             "#9aa663",
         ))
 
+        # 10. Tips for beginners
         content_layout.addWidget(_Section(
             "Mẹo cho người mới",
             "• <b>Bắt đầu với 9×9</b> để nắm cơ bản trước khi lên 19×19.<br>"
